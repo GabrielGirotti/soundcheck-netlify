@@ -41,6 +41,8 @@ const HeroSlider: React.FC = () => {
   if (loading) return <Spinner />;
   if (slides.length === 0) return null;
 
+  console.log(slides)
+
   return (
     <section className="w-full mb-4">
       <Swiper

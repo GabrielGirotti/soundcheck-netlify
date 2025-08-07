@@ -32,7 +32,7 @@ const Home: React.FC = () => {
         const res = await fetch(`${API_URL}/instruments`);
         const data = await res.json();
         setInstruments(data);
-        console.log(data)
+
       } catch (error) {
         console.error("Error cargando instrumentos:", error);
       } finally {
