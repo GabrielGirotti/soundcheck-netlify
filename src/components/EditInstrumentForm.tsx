@@ -64,8 +64,29 @@ const EditInstrumentForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (profanity.isProfane(title) || profanity.isProfane(description)) {
-      toast.error("El título o la descripción contiene lenguaje inapropiado.");
+    const offensiveInTitle = profanity.isProfane(title);
+    const offensiveInDescription = profanity.isProfane(description);
+
+    if (offensiveInTitle || offensiveInDescription) {
+      let offendingWord = "";
+
+      // Identificar palabra ofensiva comparando texto limpio vs original
+      const cleanTitle = leoProfanity.clean(title);
+      const cleanDescription = leoProfanity.clean(description);
+
+      if (offensiveInTitle) {
+        const words = title.split(" ");
+        const cleanedWords = cleanTitle.split(" ");
+        offendingWord = words.find((w, i) => w !== cleanedWords[i]) || "";
+      } else if (offensiveInDescription) {
+        const words = description.split(" ");
+        const cleanedWords = cleanDescription.split(" ");
+        offendingWord = words.find((w, i) => w !== cleanedWords[i]) || "";
+      }
+
+      toast.error(
+        `El texto contiene lenguaje inapropiado. Palabra detectada: "${offendingWord}"`
+      );
       return;
     }
 
