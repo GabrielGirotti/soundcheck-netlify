@@ -31,8 +31,9 @@ const EditInstrumentForm: React.FC = () => {
         setDescription(data.description);
         setCategory(data.category);
         setImagePreviews(
-          data.imageUrls?.map((url: string) => `${API_URL}${url}`) ||
-            []
+          data.imageUrls?.map((url: string) =>
+            url.startsWith("http") ? url : `${API_URL}${url}`
+          ) || []
         );
       } catch (error) {
         toast.error("No se pudo cargar el instrumento");
