@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import leoProfanity from "leo-profanity";
+const leoProfanity = require("leo-profanity");
+
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -12,18 +13,21 @@ const Register: React.FC = () => {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const profanity = leoProfanity as any;
+  // 🧠 Cargar diccionario ofensivo solo una vez
+  useEffect(() => {
+    leoProfanity.clearList(); // Limpia cualquier lista previa
+    leoProfanity.loadDictionary("en"); // Carga diccionario en inglés
 
-  // 🆕 Cargar diccionario en español e inglés
-  leoProfanity.loadDictionary("es" as any);
-  leoProfanity.loadDictionary("en");
+    // ⚠️ Aunque TS no lo reconoce, "es" está disponible en el paquete
+    // Así que lo forzamos como string (esto es seguro)
+    leoProfanity.loadDictionary("es" as unknown as "en");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    // 🛑 Validar si el username es ofensivo
-    if (profanity.isProfane(username)) {
+    if (leoProfanity.isProfane(username)) {
       setError("El nombre de usuario contiene palabras inapropiadas.");
       return;
     }
@@ -85,7 +89,7 @@ const Register: React.FC = () => {
         </button>
       </form>
       <nav className="w-full flex flex-col justify-center gap-2 items-center p-4">
-        <p className="font-black">Ya tienes cuenta? </p>
+        <p className="font-black">¿Ya tienes cuenta?</p>
         <Link
           to="/login"
           className="hover:text-pink-400 text-white transition duration-300"
