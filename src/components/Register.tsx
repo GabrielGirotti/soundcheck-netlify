@@ -1,25 +1,38 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import leoProfanity from "leo-profanity";
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState(""); // Nuevo estado para email
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const API_URL = import.meta.env.VITE_API_URL;
 
+  const profanity = leoProfanity as any;
+
+  // 🆕 Cargar diccionario en español e inglés
+  leoProfanity.loadDictionary("es" as any);
+  leoProfanity.loadDictionary("en");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // 🛑 Validar si el username es ofensivo
+    if (profanity.isProfane(username)) {
+      setError("El nombre de usuario contiene palabras inapropiadas.");
+      return;
+    }
 
     try {
       const res = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }), // Enviar email
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await res.json();
@@ -77,7 +90,7 @@ const Register: React.FC = () => {
           to="/login"
           className="hover:text-pink-400 text-white transition duration-300"
         >
-          Inicia sesion presionando aqui
+          Inicia sesión presionando aquí
         </Link>
         <Link
           to="/forgot-password"
