@@ -4,12 +4,14 @@ export function useFavorites() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const token = localStorage.getItem("token");
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchFavorites = async () => {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:4000/favorites", {
+        const res = await fetch(`${API_URL}/favorites`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -33,7 +35,7 @@ export function useFavorites() {
 
   const toggleFavorite = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:4000/favorites/${id}`, {
+      const res = await fetch(`${API_URL}/favorites/${id}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
