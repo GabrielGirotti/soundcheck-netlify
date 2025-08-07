@@ -41,8 +41,6 @@ const HeroSlider: React.FC = () => {
   if (loading) return <Spinner />;
   if (slides.length === 0) return null;
 
-  console.log(slides)
-
   return (
     <section className="w-full mb-4">
       <Swiper
@@ -59,7 +57,7 @@ const HeroSlider: React.FC = () => {
               style={{
                 backgroundImage: `url(${
                   slide.imageUrls
-                    ? `${API_URL}${slide.imageUrls[0]}`
+                    ? slide.imageUrls[0]
                     : "https://via.placeholder.com/800x400?text=Sin+Imagen"
                 })`,
               }}
