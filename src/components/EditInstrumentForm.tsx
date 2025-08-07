@@ -2,7 +2,6 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
-import leoProfanity from "leo-profanity";
 
 const EditInstrumentForm: React.FC = () => {
   const navigate = useNavigate();
@@ -19,10 +18,6 @@ const EditInstrumentForm: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
 
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
-
-  leoProfanity.clearList(); // limpiar custom list por si acaso
-  leoProfanity.loadDictionary("en");
-  leoProfanity.loadDictionary("es" as any);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -59,36 +54,8 @@ const EditInstrumentForm: React.FC = () => {
     }
   };
 
-  const profanity = leoProfanity as any;
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const offensiveInTitle = profanity.isProfane(title);
-    const offensiveInDescription = profanity.isProfane(description);
-
-    if (offensiveInTitle || offensiveInDescription) {
-      let offendingWord = "";
-
-      // Identificar palabra ofensiva comparando texto limpio vs original
-      const cleanTitle = leoProfanity.clean(title);
-      const cleanDescription = leoProfanity.clean(description);
-
-      if (offensiveInTitle) {
-        const words = title.split(" ");
-        const cleanedWords = cleanTitle.split(" ");
-        offendingWord = words.find((w, i) => w !== cleanedWords[i]) || "";
-      } else if (offensiveInDescription) {
-        const words = description.split(" ");
-        const cleanedWords = cleanDescription.split(" ");
-        offendingWord = words.find((w, i) => w !== cleanedWords[i]) || "";
-      }
-
-      toast.error(
-        `El texto contiene lenguaje inapropiado. Palabra detectada: "${offendingWord}"`
-      );
-      return;
-    }
 
     const formData = new FormData();
     deletedImages.forEach((url) => {

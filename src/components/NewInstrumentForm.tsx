@@ -1,7 +1,6 @@
 import React, { useState, useRef, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import leoProfanity from "leo-profanity";
 
 const NewInstrumentForm: React.FC = () => {
   const navigate = useNavigate();
@@ -13,14 +12,8 @@ const NewInstrumentForm: React.FC = () => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [category, setCategory] = useState("");
 
-  leoProfanity.clearList(); // limpiar custom list por si acaso
-  leoProfanity.loadDictionary("en");
-  leoProfanity.loadDictionary("es" as any);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   const API_URL = import.meta.env.VITE_API_URL;
-
-  const profanity = leoProfanity as any;
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -56,16 +49,6 @@ const NewInstrumentForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (profanity.isProfane(title)) {
-      toast.error("El título contiene palabras inapropiadas.");
-      return;
-    }
-
-    if (profanity.isProfane(description)) {
-      toast.error("La descripción contiene palabras inapropiadas.");
-      return;
-    }
 
     if (imageFiles.length === 0) {
       toast.error("Por favor selecciona al menos una imagen.");
