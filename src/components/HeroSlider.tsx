@@ -22,7 +22,7 @@ const HeroSlider: React.FC = () => {
   useEffect(() => {
     const fetchSlides = async () => {
       try {
-        const res = await fetch(`http://${API_URL}/instruments/featured`, {
+        const res = await fetch(`https://${API_URL}/instruments/featured`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -57,7 +57,7 @@ const HeroSlider: React.FC = () => {
               style={{
                 backgroundImage: `url(${
                   slide.imageUrls
-                    ? `http://${API_URL}${slide.imageUrls[0]}`
+                    ? `https://${API_URL}${slide.imageUrls[0]}`
                     : "https://via.placeholder.com/800x400?text=Sin+Imagen"
                 })`,
               }}

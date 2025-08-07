@@ -23,14 +23,14 @@ const ShowInstrument = () => {
     // Cargar datos actuales del instrumento
     const fetchInstrument = async () => {
       try {
-        const res = await fetch(`http://${API_URL}/instruments/${id}`);
+        const res = await fetch(`https://${API_URL}/instruments/${id}`);
         const data = await res.json();
         setTitle(data.title);
         setPrice(data.price);
         setDescription(data.description);
         setCategory(data.category);
         setImagePreviews(
-          data.imageUrls?.map((url: string) => `http://${API_URL}${url}`) || []
+          data.imageUrls?.map((url: string) => `https://${API_URL}${url}`) || []
         );
         setUser(data.user);
       } catch (error) {

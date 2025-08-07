@@ -24,14 +24,14 @@ const EditInstrumentForm: React.FC = () => {
   useEffect(() => {
     const fetchInstrument = async () => {
       try {
-        const res = await fetch(`http://${API_URL}/instruments/${id}`);
+        const res = await fetch(`https://${API_URL}/instruments/${id}`);
         const data = await res.json();
         setTitle(data.title);
         setPrice(data.price);
         setDescription(data.description);
         setCategory(data.category);
         setImagePreviews(
-          data.imageUrls?.map((url: string) => `http://${API_URL}${url}`) ||
+          data.imageUrls?.map((url: string) => `https://${API_URL}${url}`) ||
             []
         );
       } catch (error) {
@@ -69,7 +69,7 @@ const EditInstrumentForm: React.FC = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`http://${API_URL}/instruments/${id}`, {
+      const res = await fetch(`https://${API_URL}/instruments/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -121,7 +121,7 @@ const EditInstrumentForm: React.FC = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`http://${API_URL}/instruments/${id}`, {
+      const res = await fetch(`https://${API_URL}/instruments/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

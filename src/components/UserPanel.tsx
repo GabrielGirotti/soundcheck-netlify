@@ -28,8 +28,8 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
     const fetchData = async () => {
       try {
         const [userInstrumentsRes, favoritesRes] = await Promise.all([
-          fetch(`http://${API_URL}/instruments/user/${username}`),
-          fetch(`http://${API_URL}/favorites`, {
+          fetch(`https://${API_URL}/instruments/user/${username}`),
+          fetch(`https://${API_URL}/favorites`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -60,7 +60,7 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
   const handleDelete = async (id: string) => {
     if (!window.confirm("¿Seguro que deseas eliminar este producto?")) return;
     try {
-      const res = await fetch(`http://${API_URL}/instruments/${id}`, {
+      const res = await fetch(`https://${API_URL}/instruments/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
     e.stopPropagation();
 
     try {
-      const res = await fetch(`http://${API_URL}/favorites/${id}`, {
+      const res = await fetch(`https://${API_URL}/favorites/${id}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -122,7 +122,7 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
                   src={
                     inst.imageUrls[0].startsWith("http")
                       ? inst.imageUrls[0]
-                      : `http://${API_URL}${inst.imageUrls[0]}`
+                      : `https://${API_URL}${inst.imageUrls[0]}`
                   }
                   alt={inst.title}
                   className="w-full h-48 object-cover rounded mb-2"
@@ -198,7 +198,7 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
                     src={
                       inst.imageUrls[0].startsWith("http")
                         ? inst.imageUrls[0]
-                        : `http://${API_URL}${inst.imageUrls[0]}`
+                        : `https://${API_URL}${inst.imageUrls[0]}`
                     }
                     alt={inst.title}
                     className="w-full h-48 object-cover rounded mb-2"

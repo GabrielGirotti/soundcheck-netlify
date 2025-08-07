@@ -10,7 +10,7 @@ export const FilterNav: React.FC<FilterNavProps> = ({ onCategorySelect }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await fetch(`http://${API_URL}/categories`);
+        const res = await fetch(`https://${API_URL}/categories`);
         const data = await res.json();
         setCategories(data);
       } catch (error) {
