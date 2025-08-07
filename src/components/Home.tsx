@@ -109,7 +109,7 @@ const Home: React.FC = () => {
             {/* Imagen */}
             {inst.imageUrls?.[0] && (
               <img
-                src={`${API_URL}${inst.imageUrls[0]}`}
+                src={inst.imageUrls[0]}
                 alt={inst.title}
                 className="w-full h-48 object-cover rounded mb-2"
               />
