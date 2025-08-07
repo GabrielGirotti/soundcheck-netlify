@@ -58,7 +58,10 @@ const EditInstrumentForm: React.FC = () => {
     e.preventDefault();
 
     const formData = new FormData();
-    deletedImages.forEach((url) => formData.append("deletedImages", url));
+    deletedImages.forEach((url) => {
+      const path = new URL(url).pathname; // extrae solo "/uploads/xxx.png"
+      formData.append("deletedImages", path);
+    });
     formData.append("title", title);
     formData.append("price", price.toString());
     formData.append("description", description);
