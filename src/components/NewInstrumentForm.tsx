@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, useRef, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
@@ -12,13 +12,23 @@ const NewInstrumentForm: React.FC = () => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [category, setCategory] = useState("");
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-      setImageFiles(filesArray);
-      setImagePreviews(filesArray.map((file) => URL.createObjectURL(file)));
+      setImageFiles((prev) => [...prev, ...filesArray]);
+      setImagePreviews((prev) => [
+        ...prev,
+        ...filesArray.map((file) => URL.createObjectURL(file)),
+      ]);
+
+      // Forzar reset del input para permitir seleccionar la misma imagen nuevamente
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     }
   };
 
@@ -161,6 +171,7 @@ const NewInstrumentForm: React.FC = () => {
               accept="image/*"
               multiple
               onChange={handleImageChange}
+              ref={fileInputRef}
               className="hidden"
             />
           </label>
