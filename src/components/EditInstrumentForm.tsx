@@ -2,6 +2,7 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
+import leoProfanity from "leo-profanity";
 
 const EditInstrumentForm: React.FC = () => {
   const navigate = useNavigate();
@@ -18,6 +19,10 @@ const EditInstrumentForm: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
 
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
+
+  leoProfanity.clearList(); // limpiar custom list por si acaso
+  leoProfanity.loadDictionary("en");
+  leoProfanity.loadDictionary("es" as any);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -54,8 +59,15 @@ const EditInstrumentForm: React.FC = () => {
     }
   };
 
+  const profanity = leoProfanity as any;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (profanity.isProfane(title) || profanity.isProfane(description)) {
+      toast.error("El título o la descripción contiene lenguaje inapropiado.");
+      return;
+    }
 
     const formData = new FormData();
     deletedImages.forEach((url) => {
