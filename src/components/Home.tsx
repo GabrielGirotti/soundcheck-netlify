@@ -29,7 +29,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`https://${API_URL}/instruments`);
+        const res = await fetch(`${API_URL}/instruments`);
         const data = await res.json();
         setInstruments(data);
       } catch (error) {
@@ -108,7 +108,7 @@ const Home: React.FC = () => {
             {/* Imagen */}
             {inst.imageUrls?.[0] && (
               <img
-                src={`https://${API_URL}${inst.imageUrls[0]}`}
+                src={`${API_URL}${inst.imageUrls[0]}`}
                 alt={inst.title}
                 className="w-full h-48 object-cover rounded mb-2"
               />

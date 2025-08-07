@@ -28,7 +28,7 @@ const SearchResults: React.FC = () => {
     const fetchResults = async () => {
       try {
         const res = await fetch(
-          `https://${API_URL}/instruments/search?q=${encodeURIComponent(query)}`
+          `${API_URL}/instruments/search?q=${encodeURIComponent(query)}`
         );
         const data = await res.json();
         setResults(data);
@@ -108,7 +108,7 @@ const SearchResults: React.FC = () => {
             {/* Imagen */}
             {inst.imageUrls?.[0] && (
               <img
-                src={`https://${API_URL}${inst.imageUrls[0]}`}
+                src={`${API_URL}${inst.imageUrls[0]}`}
                 alt={inst.title}
                 className="w-full h-48 object-cover rounded mb-2"
               />

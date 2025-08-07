@@ -24,7 +24,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
 
     try {
       const res = await fetch(
-        `https://${API_URL}/instruments/search?q=${encodeURIComponent(value)}`
+        `${API_URL}/instruments/search?q=${encodeURIComponent(value)}`
       );
       const data = await res.json();
       setResults(data);

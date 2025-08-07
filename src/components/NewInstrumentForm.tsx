@@ -42,7 +42,7 @@ const NewInstrumentForm: React.FC = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`https://${API_URL}/instruments`, {
+      const res = await fetch(`${API_URL}/instruments`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
