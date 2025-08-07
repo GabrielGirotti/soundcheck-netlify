@@ -19,11 +19,8 @@ const NewInstrumentForm: React.FC = () => {
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
-      setImageFiles((prev) => [...prev, ...filesArray]);
-      setImagePreviews((prev) => [
-        ...prev,
-        ...filesArray.map((file) => URL.createObjectURL(file)),
-      ]);
+      setImageFiles(filesArray);
+      setImagePreviews(filesArray.map((file) => URL.createObjectURL(file)));
 
       // Forzar reset del input para permitir seleccionar la misma imagen nuevamente
       if (fileInputRef.current) {
