@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-const leoProfanity = require("leo-profanity");
-
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -13,24 +11,9 @@ const Register: React.FC = () => {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // 🧠 Cargar diccionario ofensivo solo una vez
-  useEffect(() => {
-    leoProfanity.clearList(); // Limpia cualquier lista previa
-    leoProfanity.loadDictionary("en"); // Carga diccionario en inglés
-
-    // ⚠️ Aunque TS no lo reconoce, "es" está disponible en el paquete
-    // Así que lo forzamos como string (esto es seguro)
-    leoProfanity.loadDictionary("es" as unknown as "en");
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (leoProfanity.isProfane(username)) {
-      setError("El nombre de usuario contiene palabras inapropiadas.");
-      return;
-    }
 
     try {
       const res = await fetch(`${API_URL}/auth/register`, {
