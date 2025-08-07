@@ -30,7 +30,7 @@ const ShowInstrument = () => {
         setDescription(data.description);
         setCategory(data.category);
         setImagePreviews(
-          data.imageUrls?.map((url: string) => `${API_URL}${url}`) || []
+          data.imageUrls?.map((url: string) => `${url}`) || []
         );
         setUser(data.user);
       } catch (error) {
