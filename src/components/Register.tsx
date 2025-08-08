@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import Spinner from "../components/Spinner"; // Ajusta la ruta según tu proyecto
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const API_URL = import.meta.env.VITE_API_URL;
@@ -14,6 +16,7 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     try {
       const res = await fetch(`${API_URL}/auth/register`, {
@@ -30,11 +33,20 @@ const Register: React.FC = () => {
       navigate("/login");
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 rounded-md mt-9">
+    <div className="relative max-w-md mx-auto p-6 rounded-md mt-9">
+      {/* Overlay con Spinner */}
+      {loading && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Spinner />
+        </div>
+      )}
+
       <h2 className="text-2xl mb-4 text-white font-bold">Registro</h2>
       {error && <p className="mb-2 text-red-500">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -66,7 +78,12 @@ const Register: React.FC = () => {
         />
         <button
           type="submit"
-          className="transition duration-300 w-full bg-pink-400 hover:bg-pink-600 p-2 rounded text-white font-semibold"
+          disabled={loading}
+          className={`transition duration-300 w-full p-2 rounded text-white font-semibold ${
+            loading
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-pink-400 hover:bg-pink-600"
+          }`}
         >
           Registrarse
         </button>
