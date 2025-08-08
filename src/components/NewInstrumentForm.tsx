@@ -1,7 +1,8 @@
-import React, { useState, useRef, ChangeEvent } from "react";
+import React, { useState, useRef, useEffect, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { Filter } from "bad-words";
+import * as nsfwjs from "nsfwjs";
 
 const NewInstrumentForm: React.FC = () => {
   const navigate = useNavigate();
@@ -15,10 +16,10 @@ const NewInstrumentForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const modelRef = useRef<nsfwjs.NSFWJS | null>(null); // Para el modelo NSFW
   const API_URL = import.meta.env.VITE_API_URL;
 
   const filter = new Filter();
-
   filter.addWords(
     "Idiota",
     "Gilipollas",
@@ -42,24 +43,65 @@ const NewInstrumentForm: React.FC = () => {
     "Pelotuda"
   );
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  // Cargar el modelo una sola vez
+  useEffect(() => {
+    const loadModel = async () => {
+      modelRef.current = await nsfwjs.load();
+    };
+    loadModel();
+  }, []);
+
+  const analyzeImage = async (file: File) => {
+    if (!modelRef.current) return false;
+
+    return new Promise<boolean>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const img = new Image();
+        img.src = reader.result as string;
+        img.onload = async () => {
+          const predictions = await modelRef.current!.classify(img);
+          const isSensitive = predictions.some(
+            (p) =>
+              (p.className === "Porn" ||
+                p.className === "Hentai" ||
+                p.className === "Sexy") &&
+              p.probability > 0.7
+          );
+          resolve(isSensitive);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
+      const safeFiles: File[] = [];
+      const safePreviews: string[] = [];
 
-      // Filtrar duplicados por nombre y tamaño
-      const filteredNewFiles = newFiles.filter(
-        (file) =>
+      for (const file of newFiles) {
+        const isSensitive = await analyzeImage(file);
+        if (isSensitive) {
+          toast.error(
+            `La imagen "${file.name}" contiene contenido sensible y fue rechazada.`
+          );
+          continue;
+        }
+        if (
           !imageFiles.some(
             (existing) =>
               existing.name === file.name && existing.size === file.size
           )
-      );
+        ) {
+          safeFiles.push(file);
+          safePreviews.push(URL.createObjectURL(file));
+        }
+      }
 
-      setImageFiles((prev) => [...prev, ...filteredNewFiles]);
-      setImagePreviews((prev) => [
-        ...prev,
-        ...filteredNewFiles.map((file) => URL.createObjectURL(file)),
-      ]);
+      setImageFiles((prev) => [...prev, ...safeFiles]);
+      setImagePreviews((prev) => [...prev, ...safePreviews]);
 
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
@@ -78,7 +120,9 @@ const NewInstrumentForm: React.FC = () => {
     e.preventDefault();
     setError(null);
     if (filter.isProfane(title) || filter.isProfane(description)) {
-      setError("Esta utilizando lenguaje inapropiado en el título o descripción.");
+      setError(
+        "Esta utilizando lenguaje inapropiado en el título o descripción."
+      );
       return;
     }
 
@@ -112,7 +156,6 @@ const NewInstrumentForm: React.FC = () => {
       await res.json();
       toast.success("Instrumento publicado con éxito");
 
-      // Reset
       setTitle("");
       setPrice("");
       setDescription("");
@@ -121,7 +164,7 @@ const NewInstrumentForm: React.FC = () => {
       setCategory("");
 
       navigate("/");
-    } catch (error) {
+    } catch {
       toast.error("Error al publicar instrumento");
     }
   };
