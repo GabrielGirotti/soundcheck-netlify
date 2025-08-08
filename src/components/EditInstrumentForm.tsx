@@ -2,6 +2,7 @@ import React, { useState, useEffect, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
+import { Filter } from "bad-words";
 
 const EditInstrumentForm: React.FC = () => {
   const navigate = useNavigate();
@@ -18,8 +19,34 @@ const EditInstrumentForm: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
 
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
+
+  const filter = new Filter();
+
+  filter.addWords(
+    "Idiota",
+    "Gilipollas",
+    "Estúpido",
+    "Estúpida",
+    "Mierda",
+    "Pendejo",
+    "Pendeja",
+    "Puta",
+    "Puto",
+    "Conchudo",
+    "Conchuda",
+    "Pija",
+    "Verga",
+    "Chota",
+    "Cago",
+    "Cagar",
+    "Boludo",
+    "Boluda",
+    "Pelotudo",
+    "Pelotuda"
+  );
 
   useEffect(() => {
     const fetchInstrument = async () => {
@@ -56,6 +83,13 @@ const EditInstrumentForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    if (filter.isProfane(title) || filter.isProfane(description)) {
+      setError(
+        "Esta utilizando lenguaje inapropiado en el título o descripción."
+      );
+      return;
+    }
 
     const formData = new FormData();
     deletedImages.forEach((url) => {
@@ -157,7 +191,7 @@ const EditInstrumentForm: React.FC = () => {
             &larr; Volver
           </button>
         </div>
-
+        {error && <p className="mb-2 text-red-500">{error}</p>}
         <label className="block mb-2 text-gray-300">Título</label>
         <input
           type="text"
