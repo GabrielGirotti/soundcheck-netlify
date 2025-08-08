@@ -78,30 +78,42 @@ const NewInstrumentForm: React.FC = () => {
   const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
-      const safeFiles: File[] = [];
-      const safePreviews: string[] = [];
 
-      for (const file of newFiles) {
-        const isSensitive = await analyzeImage(file);
-        if (isSensitive) {
-          toast.error(
-            `La imagen "${file.name}" contiene contenido sensible y fue rechazada.`
-          );
-          continue;
-        }
-        if (
+      // Filtramos los duplicados antes de analizar
+      const uniqueNewFiles = newFiles.filter(
+        (file) =>
           !imageFiles.some(
             (existing) =>
               existing.name === file.name && existing.size === file.size
           )
-        ) {
-          safeFiles.push(file);
-          safePreviews.push(URL.createObjectURL(file));
-        }
-      }
+      );
 
+      // Procesamos todas las imágenes en paralelo
+      const analysisResults = await Promise.all(
+        uniqueNewFiles.map(async (file) => {
+          const isSensitive = await analyzeImage(file);
+          return { file, isSensitive };
+        })
+      );
+
+      const safeFiles = analysisResults
+        .filter((res) => {
+          if (res.isSensitive) {
+            toast.error(
+              `La imagen "${res.file.name}" contiene contenido sensible y fue rechazada.`
+            );
+            return false;
+          }
+          return true;
+        })
+        .map((res) => res.file);
+
+      // Agregamos las imágenes seguras y sus previews
       setImageFiles((prev) => [...prev, ...safeFiles]);
-      setImagePreviews((prev) => [...prev, ...safePreviews]);
+      setImagePreviews((prev) => [
+        ...prev,
+        ...safeFiles.map((file) => URL.createObjectURL(file)),
+      ]);
 
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
