@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-import Spinner from "../components/Spinner"; // Ajusta la ruta según tu proyecto
+import Spinner from "../components/Spinner";
+import { Filter } from "bad-words";
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -13,11 +14,42 @@ const Register: React.FC = () => {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
+  const filter = new Filter();
+
+  filter.addWords(
+    "Idiota",
+    "Gilipollas",
+    "Estúpido",
+    "Estúpida",
+    "Mierda",
+    "Pendejo",
+    "Pendeja",
+    "Puta",
+    "Puto",
+    "Conchudo",
+    "Conchuda",
+    "Pija",
+    "Verga",
+    "Chota",
+    "Cago",
+    "Cagar",
+    "Boludo",
+    "Boluda",
+    "Pelotudo",
+    "Pelotuda"
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setLoading(true);
 
+    // 🛑 Validación frontend
+    if (filter.isProfane(username)) {
+      setError("El nombre de usuario contiene palabras inapropiadas.");
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
@@ -40,7 +72,6 @@ const Register: React.FC = () => {
 
   return (
     <div className="relative max-w-md mx-auto p-6 rounded-md mt-9">
-      {/* Overlay con Spinner */}
       {loading && (
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <Spinner />
