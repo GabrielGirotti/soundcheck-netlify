@@ -66,7 +66,7 @@ const NewInstrumentForm: React.FC = () => {
               (p.className === "Porn" ||
                 p.className === "Hentai" ||
                 p.className === "Sexy") &&
-              p.probability > 0.7
+              p.probability > 0.5
           );
           resolve(isSensitive);
         };
