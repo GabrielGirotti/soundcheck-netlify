@@ -1,6 +1,7 @@
 import React, { useState, useRef, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { Filter } from "bad-words";
 
 const NewInstrumentForm: React.FC = () => {
   const navigate = useNavigate();
@@ -11,9 +12,35 @@ const NewInstrumentForm: React.FC = () => {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [category, setCategory] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const API_URL = import.meta.env.VITE_API_URL;
+
+  const filter = new Filter();
+
+  filter.addWords(
+    "Idiota",
+    "Gilipollas",
+    "Estúpido",
+    "Estúpida",
+    "Mierda",
+    "Pendejo",
+    "Pendeja",
+    "Puta",
+    "Puto",
+    "Conchudo",
+    "Conchuda",
+    "Pija",
+    "Verga",
+    "Chota",
+    "Cago",
+    "Cagar",
+    "Boludo",
+    "Boluda",
+    "Pelotudo",
+    "Pelotuda"
+  );
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -49,6 +76,11 @@ const NewInstrumentForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    if (filter.isProfane(title) || filter.isProfane(description)) {
+      setError("El nombre de usuario contiene palabras inapropiadas.");
+      return;
+    }
 
     if (imageFiles.length === 0) {
       toast.error("Por favor selecciona al menos una imagen.");
@@ -118,7 +150,7 @@ const NewInstrumentForm: React.FC = () => {
             &larr; Volver
           </button>
         </div>
-
+        {error && <p className="mb-2 text-red-500">{error}</p>}
         {/* Título */}
         <label className="block mb-2 text-gray-300">Título</label>
         <input
