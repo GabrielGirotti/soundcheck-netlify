@@ -78,7 +78,7 @@ const NewInstrumentForm: React.FC = () => {
     e.preventDefault();
     setError(null);
     if (filter.isProfane(title) || filter.isProfane(description)) {
-      setError("El nombre de usuario contiene palabras inapropiadas.");
+      setError("Esta utilizando lenguaje inapropiado en el título o descripción.");
       return;
     }
 
