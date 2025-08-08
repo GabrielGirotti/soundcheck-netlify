@@ -1,8 +1,9 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
 import { Filter } from "bad-words";
+import * as nsfwjs from "nsfwjs";
 
 const EditInstrumentForm: React.FC = () => {
   const navigate = useNavigate();
@@ -15,16 +16,15 @@ const EditInstrumentForm: React.FC = () => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(true);
-
   const [deleting, setDeleting] = useState(false);
-
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const filter = new Filter();
+  const modelRef = useRef<nsfwjs.NSFWJS | null>(null);
 
+  const filter = new Filter();
   filter.addWords(
     "Idiota",
     "Gilipollas",
@@ -48,6 +48,14 @@ const EditInstrumentForm: React.FC = () => {
     "Pelotuda"
   );
 
+  // Cargar modelo NSFW.js una sola vez
+  useEffect(() => {
+    const loadModel = async () => {
+      modelRef.current = await nsfwjs.load();
+    };
+    loadModel();
+  }, []);
+
   useEffect(() => {
     const fetchInstrument = async () => {
       try {
@@ -62,7 +70,7 @@ const EditInstrumentForm: React.FC = () => {
             url.startsWith("http") ? url : `${API_URL}${url}`
           ) || []
         );
-      } catch (error) {
+      } catch {
         toast.error("No se pudo cargar el instrumento");
         navigate("/panel");
       } finally {
@@ -72,18 +80,74 @@ const EditInstrumentForm: React.FC = () => {
     fetchInstrument();
   }, [id, navigate]);
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const analyzeImage = async (file: File) => {
+    if (!modelRef.current) return false;
+    return new Promise<boolean>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const img = new Image();
+        img.src = reader.result as string;
+        img.onload = async () => {
+          const predictions = await modelRef.current!.classify(img);
+          const isSensitive = predictions.some(
+            (p) =>
+              (p.className === "Porn" ||
+                p.className === "Hentai" ||
+                p.className === "Sexy") &&
+              p.probability > 0.5 
+          );
+          resolve(isSensitive);
+        };
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const filesArray = Array.from(e.target.files);
-      setImageFiles((prev) => [...prev, ...filesArray]);
-      const newPreviews = filesArray.map((file) => URL.createObjectURL(file));
-      setImagePreviews((prev) => [...prev, ...newPreviews]);
+      const newFiles = Array.from(e.target.files);
+
+      // Evitar duplicados antes de analizar
+      const uniqueNewFiles = newFiles.filter(
+        (file) =>
+          !imageFiles.some(
+            (existing) =>
+              existing.name === file.name && existing.size === file.size
+          )
+      );
+
+      // Analizar en paralelo
+      const analysisResults = await Promise.all(
+        uniqueNewFiles.map(async (file) => {
+          const isSensitive = await analyzeImage(file);
+          return { file, isSensitive };
+        })
+      );
+
+      const safeFiles = analysisResults
+        .filter((res) => {
+          if (res.isSensitive) {
+            toast.error(
+              `La imagen "${res.file.name}" contiene contenido sensible y fue rechazada.`
+            );
+            return false;
+          }
+          return true;
+        })
+        .map((res) => res.file);
+
+      setImageFiles((prev) => [...prev, ...safeFiles]);
+      setImagePreviews((prev) => [
+        ...prev,
+        ...safeFiles.map((file) => URL.createObjectURL(file)),
+      ]);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
     if (filter.isProfane(title) || filter.isProfane(description)) {
       setError(
         "Esta utilizando lenguaje inapropiado en el título o descripción."
@@ -93,7 +157,7 @@ const EditInstrumentForm: React.FC = () => {
 
     const formData = new FormData();
     deletedImages.forEach((url) => {
-      const path = new URL(url).pathname; // extrae solo "/uploads/xxx.png"
+      const path = new URL(url).pathname;
       formData.append("deletedImages", path);
     });
     formData.append("title", title);
@@ -101,7 +165,7 @@ const EditInstrumentForm: React.FC = () => {
     formData.append("description", description);
     formData.append("category", category);
     imageFiles.forEach((file) => {
-      formData.append("images", file); // nombre debe coincidir con multer.array("images")
+      formData.append("images", file);
     });
 
     const token = localStorage.getItem("token");
@@ -109,9 +173,7 @@ const EditInstrumentForm: React.FC = () => {
     try {
       const res = await fetch(`${API_URL}/instruments/${id}`, {
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
@@ -119,8 +181,45 @@ const EditInstrumentForm: React.FC = () => {
 
       toast.success("Instrumento editado con éxito");
       navigate("/panel");
-    } catch (error) {
+    } catch {
       toast.error("Error al editar instrumento");
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const newPreviews = [...imagePreviews];
+    const removed = newPreviews.splice(index, 1)[0];
+    setImagePreviews(newPreviews);
+
+    const newFiles = [...imageFiles];
+    if (index < imageFiles.length) {
+      newFiles.splice(index, 1);
+    } else {
+      setDeletedImages((prev) => [...prev, removed]);
+    }
+    setImageFiles(newFiles);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("¿Seguro que deseas eliminar este producto?")) return;
+
+    setDeleting(true);
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch(`${API_URL}/instruments/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error("Error al eliminar producto");
+
+      toast.success("Producto eliminado con éxito");
+      navigate("/panel");
+    } catch {
+      toast.error("No se pudo eliminar el producto");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -136,48 +235,6 @@ const EditInstrumentForm: React.FC = () => {
   ];
 
   if (loading) return <Spinner />;
-
-  const handleRemoveImage = (index: number) => {
-    const newPreviews = [...imagePreviews];
-    const removed = newPreviews.splice(index, 1)[0]; // URL de la imagen eliminada
-    setImagePreviews(newPreviews);
-
-    const newFiles = [...imageFiles];
-    if (index < imageFiles.length) {
-      newFiles.splice(index, 1); // si es archivo nuevo, lo borramos directamente
-    } else {
-      // si es una imagen antigua (viene del backend), guardamos su URL para eliminar
-      setDeletedImages((prev) => [...prev, removed]);
-    }
-    setImageFiles(newFiles);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este producto?")) return;
-
-    setDeleting(true);
-    const token = localStorage.getItem("token");
-
-    try {
-      const res = await fetch(`${API_URL}/instruments/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!res.ok) throw new Error("Error al eliminar producto");
-
-      toast.success("Producto eliminado con éxito");
-      navigate("/panel");
-    } catch (error) {
-      toast.error("No se pudo eliminar el producto");
-      console.error(error);
-    } finally {
-      setDeleting(false);
-    }
-  };
-
   return (
     <div className="max-w-md mx-auto p-6 rounded-md">
       <form onSubmit={handleSubmit}>
