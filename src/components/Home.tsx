@@ -87,6 +87,10 @@ const Home: React.FC = () => {
               className={`bg-slate-800 hover:bg-slate-700 hover:shadow-2xl p-4 rounded-t-3xl rounded-l-3xl shadow relative hover:scale-105 transition duration-300 cursor-pointer
         ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}
       `}
+              style={{
+                transitionProperty: "opacity, transform",
+                transitionDuration: "600ms",
+              }}
             >
               {/* Corazón de favoritos */}
               <button
