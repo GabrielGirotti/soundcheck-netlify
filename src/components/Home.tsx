@@ -64,8 +64,6 @@ const Home: React.FC = () => {
     navigate(`show-instrument/${_id}`);
   };
 
-
-
   return (
     <>
       <HeroSlider />
