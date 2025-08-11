@@ -4,6 +4,7 @@ import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import Spinner from "./Spinner";
+import { useNavigate } from "react-router-dom";
 
 interface Slide {
   _id: string;
@@ -18,6 +19,7 @@ const HeroSlider: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const API_URL = import.meta.env.VITE_API_URL;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSlides = async () => {
@@ -37,6 +39,10 @@ const HeroSlider: React.FC = () => {
     };
     fetchSlides();
   }, []);
+
+  const handleClick = (_id: string) => {
+    navigate(`show-instrument/${_id}`);
+  };
 
   if (loading) return <Spinner />;
   if (slides.length === 0) return null;
@@ -71,9 +77,7 @@ const HeroSlider: React.FC = () => {
                 </p>
 
                 <button
-                  onClick={() =>
-                    (window.location.href = `/show-instrument/${slide._id}`)
-                  }
+                  onClick={() => handleClick(slide._id)}
                   className="mt-4 bg-gradient-to-r from-orange-400 to-pink-600 text-white px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300"
                 >
                   Ver mas...

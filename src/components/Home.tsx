@@ -118,7 +118,7 @@ const Home: React.FC = () => {
 
             <h3 className="text-white text-xl font-semibold">{inst.title}</h3>
             <p className="text-gray-400 pr-16 md:pr-24">{inst.description}</p>
-            <div className="flex pr-16 md:pr-24 gap-1">
+            <div className="flex pr-16 md:pr-24 gap-1 mt-2">
               <CiLocationOn />
               <p className="text-gray-400 pr-16 md:pr-24 text-xs">
                 {inst.location}
