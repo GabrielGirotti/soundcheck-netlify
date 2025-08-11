@@ -4,7 +4,6 @@ import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import Spinner from "./Spinner";
-import { CiLocationOn } from "react-icons/ci";
 
 interface Slide {
   _id: string;
@@ -12,7 +11,6 @@ interface Slide {
   title: string;
   description: string;
   price: number;
-  location?: string;
 }
 
 const HeroSlider: React.FC = () => {
@@ -71,12 +69,16 @@ const HeroSlider: React.FC = () => {
                 <p className="mt-2 text-sm md:text-base pr-20 md:pr-24">
                   {slide.description}
                 </p>
-                <div className="flex pr-16 md:pr-24 gap-1">
-                  <CiLocationOn />
-                  <p className="text-gray-400 pr-16 md:pr-24 text-xs">
-                    {slide.location}
-                  </p>
-                </div>
+
+                <button
+                  onClick={() =>
+                    (window.location.href = `/show-instrument/${slide._id}`)
+                  }
+                  className="mt-4 bg-gradient-to-r from-orange-400 to-pink-600 text-white px-6 py-2 rounded-full hover:scale-105 transition-transform duration-300"
+                >
+                  Ver mas...
+                </button>
+
                 <span className="absolute bottom-0 right-0 bg-gradient-to-r hover:bg-gradient-to-l from-orange-400 to-pink-600 text-white text-xl font-semibold pr-4 pl-8 pb-4 pt-8 rounded-tl-full shadow-lg">
                   €{slide.price}
                 </span>
