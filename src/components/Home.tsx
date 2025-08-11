@@ -64,10 +64,7 @@ const Home: React.FC = () => {
     navigate(`show-instrument/${_id}`);
   };
 
-  const handleFavoriteClick = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    toggleFavorite(id);
-  };
+
 
   return (
     <>
