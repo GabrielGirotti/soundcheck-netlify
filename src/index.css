@@ -5,3 +5,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .underline-effect {
+    @apply relative heading-text p-0;
+  }
+
+  .underline-effect::after {
+    @apply content-[''] absolute w-full h-1 left-0 bottom-[-8px] bg-white origin-bottom-right hover:origin-bottom-left scale-x-0 hover:scale-x-100 transition-transform duration-300;
+  }
+
+  .heading-text {
+    @apply p-4 font-sans text-base uppercase cursor-pointer font-extrabold text-white;
+  }  
+}

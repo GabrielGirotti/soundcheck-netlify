@@ -67,13 +67,13 @@ const App: React.FC = () => {
             <span>Hola {username}</span>
             <SearchBar />
             <nav className="flex gap-4">
-              <Link to="/new" className="hover:underline">
+              <Link to="/new" className="underline-effect">
                 Vender
               </Link>
-              <Link to="/panel" className="hover:underline">
+              <Link to="/panel" className="underline-effect">
                 Mi panel
               </Link>
-              <button onClick={handleLogout} className="hover:underline">
+              <button onClick={handleLogout} className="underline-effect">
                 Salir
               </button>
             </nav>
@@ -134,19 +134,19 @@ const App: React.FC = () => {
               <nav className="flex flex-col gap-6 mt-8 items-center">
                 <Link
                   to="/new"
-                  className="hover:underline text-2xl"
+                  className="underline-effect"
                   onClick={() => setMenuOpen(false)}
                 >
                   Vender
                 </Link>
                 <Link
                   to="/panel"
-                  className="hover:underline text-2xl"
+                  className="underline-effect"
                   onClick={() => setMenuOpen(false)}
                 >
                   Mi panel
                 </Link>
-                <button onClick={handleLogout} className="hover:underline ">
+                <button onClick={handleLogout} className="underline-effect">
                   Salir
                 </button>
               </nav>
