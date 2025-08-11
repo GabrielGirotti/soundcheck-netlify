@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
+import { CiLocationOn } from "react-icons/ci";
 
 interface Instrument {
   _id: string;
@@ -10,6 +11,7 @@ interface Instrument {
   price: number;
   imageUrls?: string[];
   category?: string;
+  location?: string;
 }
 
 const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
@@ -133,6 +135,12 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
               <div className="absolute bottom-0 right-0 bg-gradient-to-r hover:bg-gradient-to-l from-orange-400 to-pink-600 text-white text-xl font-semibold pr-4 pl-8 pb-4 pt-8 rounded-tl-full shadow-lg">
                 €{inst.price}
               </div>
+              <div className="flex pr-16 md:pr-24 gap-1 mt-2">
+                <CiLocationOn />
+                <p className="text-gray-400 pr-16 md:pr-24 text-xs">
+                  {inst.location}
+                </p>
+              </div>
 
               <div className="flex gap-2 mt-4">
                 <button
@@ -210,6 +218,12 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
                 <p className="text-gray-400 pr-16 md:pr-24">
                   {inst.description}
                 </p>
+                <div className="flex pr-16 md:pr-24 gap-1 mt-2">
+                  <CiLocationOn />
+                  <p className="text-gray-400 pr-16 md:pr-24 text-xs">
+                    {inst.location}
+                  </p>
+                </div>
                 <div className="absolute bottom-0 right-0 bg-gradient-to-r hover:bg-gradient-to-l from-orange-400 to-pink-600 text-white text-xl font-semibold pr-4 pl-8 pb-4 pt-8 rounded-tl-full shadow-lg">
                   €{inst.price}
                 </div>

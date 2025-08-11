@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
+import { CiLocationOn } from "react-icons/ci";
 
 const ShowInstrument = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const ShowInstrument = () => {
   const [category, setCategory] = useState("");
   const [user, setUser] = useState("");
   const [loading, setLoading] = useState(true);
+  const [location, setLocation] = useState("");
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -29,9 +31,8 @@ const ShowInstrument = () => {
         setPrice(data.price);
         setDescription(data.description);
         setCategory(data.category);
-        setImagePreviews(
-          data.imageUrls?.map((url: string) => `${url}`) || []
-        );
+        setLocation(data.location);
+        setImagePreviews(data.imageUrls?.map((url: string) => `${url}`) || []);
         setUser(data.user);
       } catch (error) {
         toast.error("No se pudo cargar el instrumento");
@@ -67,6 +68,11 @@ const ShowInstrument = () => {
           <p className="mt-2 text-sm md:text-base pr-20 md:pr-24">
             {description}
           </p>
+
+          <div className="flex pr-16 md:pr-24 gap-1 mt-2">
+            <CiLocationOn />
+            <p className="text-gray-400 pr-16 md:pr-24 text-xs">{location}</p>
+          </div>
 
           <p className="mt-2 text-xs md:text-sm pr-20 md:pr-24 italic text-slate-500">
             Publicado por {user ? user : "Usuario desconocido"}
