@@ -70,7 +70,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 rounded bg-gray-700 text-white"
+            className="w-full p-2 rounded bg-gray-700 text-white pr-10"
             required
           />
           <button
