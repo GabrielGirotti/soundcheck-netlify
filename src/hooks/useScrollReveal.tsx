@@ -1,27 +1,27 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function useScrollReveal() {
-  const ref = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    const el = ref.current;
+    if (!el) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          observer.unobserve(element); // Solo una vez para no estar escuchando todo el tiempo
+          observer.unobserve(el); // solo animar una vez
         }
       },
       { threshold: 0.1 }
     );
 
-    observer.observe(element);
+    observer.observe(el);
 
     return () => {
-      observer.disconnect();
+      if (el) observer.unobserve(el);
     };
   }, []);
 
