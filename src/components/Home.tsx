@@ -64,8 +64,6 @@ const Home: React.FC = () => {
     navigate(`show-instrument/${_id}`);
   };
 
-  console.log("Username en Home:", username);
-
   return (
     <>
       <HeroSlider />

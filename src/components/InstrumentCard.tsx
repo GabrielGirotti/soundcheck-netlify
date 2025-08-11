@@ -28,7 +28,6 @@ const InstrumentCard: React.FC<InstrumentCardProps> = ({
   toggleFavorite,
   isLoggedIn,
 }) => {
-  console.log("isLoggedIn en InstrumentCard:", isLoggedIn);
   const { ref, isVisible } = useScrollReveal();
 
   return (
