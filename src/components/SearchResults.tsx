@@ -18,6 +18,7 @@ const SearchResults: React.FC = () => {
   const [results, setResults] = useState<Instrument[]>([]);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
+  const username = localStorage.getItem("username");
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
 
@@ -73,6 +74,7 @@ const SearchResults: React.FC = () => {
             onClick={handleClick}
             isFavorite={isFavorite}
             toggleFavorite={toggleFavorite}
+            isLoggedIn={!!username}
           />
         ))}
       </div>
