@@ -64,7 +64,6 @@ const App: React.FC = () => {
 
           {/* Desktop nav */}
           <div className="space-x-4 lg:flex hidden lg:flex-row flex-col items-center justify-end w-full p-4">
-            <span>Hola {username}</span>
             <SearchBar />
             <nav className="flex gap-4">
               <Link to="/new" className="underline-effect">
@@ -127,7 +126,7 @@ const App: React.FC = () => {
               >
                 SoundCheck
               </Link>
-              <span className="mb-8 text-xl">Hola {username}</span>
+
               <div>
                 <SearchBar onSearch={() => setMenuOpen(false)} />
               </div>
