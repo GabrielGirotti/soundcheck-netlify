@@ -13,6 +13,7 @@ const NewInstrumentForm: React.FC = () => {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [category, setCategory] = useState("");
+  const [location, setLocation] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -148,6 +149,7 @@ const NewInstrumentForm: React.FC = () => {
     formData.append("price", price.toString());
     formData.append("description", description);
     formData.append("category", category);
+    formData.append("location", location);
     imageFiles.forEach((file) => {
       formData.append("images", file);
     });
@@ -174,6 +176,7 @@ const NewInstrumentForm: React.FC = () => {
       setImageFiles([]);
       setImagePreviews([]);
       setCategory("");
+      setLocation("");
 
       navigate("/");
     } catch {
@@ -241,6 +244,16 @@ const NewInstrumentForm: React.FC = () => {
           value={price}
           onChange={(e) => setPrice(Number(e.target.value))}
           className="w-full p-2 rounded bg-gray-700 text-white mb-4"
+          required
+        />
+
+        <label className="block mb-2 text-gray-300">Ubicación</label>
+        <input
+          type="text"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="w-full p-2 rounded bg-gray-700 text-white mb-4"
+          placeholder="Ej: Madrid, España"
           required
         />
 

@@ -19,6 +19,7 @@ const EditInstrumentForm: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [location, setLocation] = useState("");
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -65,6 +66,7 @@ const EditInstrumentForm: React.FC = () => {
         setPrice(data.price);
         setDescription(data.description);
         setCategory(data.category);
+        setLocation(data.location || "");
         setImagePreviews(
           data.imageUrls?.map((url: string) =>
             url.startsWith("http") ? url : `${API_URL}${url}`
@@ -94,7 +96,7 @@ const EditInstrumentForm: React.FC = () => {
               (p.className === "Porn" ||
                 p.className === "Hentai" ||
                 p.className === "Sexy") &&
-              p.probability > 0.5 
+              p.probability > 0.5
           );
           resolve(isSensitive);
         };
@@ -164,6 +166,7 @@ const EditInstrumentForm: React.FC = () => {
     formData.append("price", price.toString());
     formData.append("description", description);
     formData.append("category", category);
+    formData.append("location", location);
     imageFiles.forEach((file) => {
       formData.append("images", file);
     });
@@ -282,6 +285,14 @@ const EditInstrumentForm: React.FC = () => {
           onChange={(e) => setPrice(Number(e.target.value))}
           className="w-full p-2 rounded bg-gray-700 text-white mb-4"
           required
+        />
+
+        <label className="block mb-2 text-gray-300">Ubicación</label>
+        <input
+          type="text"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className="w-full p-2 rounded bg-gray-700 text-white mb-4"
         />
 
         <label className="block mb-2 text-gray-300">Descripción</label>
