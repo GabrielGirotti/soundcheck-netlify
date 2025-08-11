@@ -4,6 +4,7 @@ import HeroSlider from "./HeroSlider";
 import Spinner from "./Spinner";
 import { useNavigate } from "react-router-dom";
 import { useFavorites } from "../hooks/useFavorites";
+import { useInView } from "../hooks/useInView";
 
 interface Instrument {
   _id: string;
@@ -19,6 +20,7 @@ const Home: React.FC = () => {
   const [instruments, setInstruments] = useState<Instrument[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const { ref, isInView } = useInView(0.2);
 
   const username = localStorage.getItem("username");
   const navigate = useNavigate();
@@ -32,7 +34,6 @@ const Home: React.FC = () => {
         const res = await fetch(`${API_URL}/instruments`);
         const data = await res.json();
         setInstruments(data);
-
       } catch (error) {
         console.error("Error cargando instrumentos:", error);
       } finally {
@@ -69,7 +70,12 @@ const Home: React.FC = () => {
       <HeroSlider />
       <FilterNav onCategorySelect={setSelectedCategory} />
 
-      <div className="py-4 px-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      <div
+        ref={ref}
+        className={`py-4 px-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ${
+          isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         {filteredInstruments.map((inst) => (
           <div
             key={inst._id}
