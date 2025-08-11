@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Spinner from "../components/Spinner"; // Ajusta la ruta según tu proyecto
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import Spinner from "../components/Spinner";
 
 interface LoginProps {
   onLogin: (token: string, username: string) => void;
@@ -11,6 +12,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -62,14 +64,24 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           className="w-full p-2 rounded bg-gray-700 text-white"
           required
         />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 rounded bg-gray-700 text-white"
-          required
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-2 rounded bg-gray-700 text-white"
+            required
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-white"
+          >
+            {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+          </button>
+        </div>
+
         <button
           type="submit"
           disabled={loading}
