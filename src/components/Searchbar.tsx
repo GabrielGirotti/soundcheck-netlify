@@ -56,7 +56,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           type="text"
           value={query}
           onChange={handleChange}
-          placeholder="Buscar productos, instrumentos..."
+          placeholder="Busca productos por nombre, ubicación..."
           className="bg-slate-900 w-full pl-10 pr-4 py-2 rounded-full border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
         />
         <Search
