@@ -77,6 +77,7 @@ const Home: React.FC = () => {
             onClick={handleClick}
             isFavorite={isFavorite}
             toggleFavorite={toggleFavorite}
+            isLoggedIn={!!username}
           />
         ))}
       </div>
