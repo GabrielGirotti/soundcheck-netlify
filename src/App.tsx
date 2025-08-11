@@ -63,7 +63,7 @@ const App: React.FC = () => {
           </Link>
 
           {/* Desktop nav */}
-          <div className="space-x-4 md:flex hidden md:flex-row flex-col items-center justify-end w-full p-4">
+          <div className="space-x-4 lg:flex hidden lg:flex-row flex-col items-center justify-end w-full p-4">
             <span>Hola {username}</span>
             <SearchBar />
             <nav className="flex gap-4">
@@ -81,7 +81,7 @@ const App: React.FC = () => {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden flex items-center justify-center"
+            className="lg:hidden flex items-center justify-center"
             onClick={() => setMenuOpen(true)}
             aria-label="Abrir menú"
           >
@@ -163,7 +163,7 @@ const App: React.FC = () => {
           </Link>
 
           {/* Desktop nav */}
-          <div className="space-x-4 md:flex hidden md:flex-row flex-col items-center justify-end w-full p-4">
+          <div className="space-x-4 lg:flex hidden lg:flex-row flex-col items-center justify-end w-full p-4">
             <nav className="flex gap-4">
               <Link to="/login" className="underline-effect">
                 iniciar sesión
@@ -176,7 +176,7 @@ const App: React.FC = () => {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden flex items-center justify-center"
+            className="lg:hidden flex items-center justify-center"
             onClick={() => setMenuOpen(true)}
             aria-label="Abrir menú"
           >
