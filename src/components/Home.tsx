@@ -70,17 +70,15 @@ const Home: React.FC = () => {
       <HeroSlider />
       <FilterNav onCategorySelect={setSelectedCategory} />
 
-      <div
-        ref={ref}
-        className={`py-4 px-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 transform transition-all duration-700 ease-out ${
-          isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
+      <div className="py-4 px-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ">
         {filteredInstruments.map((inst) => (
           <div
+            ref={ref}
             key={inst._id}
             onClick={() => handleClick(inst._id)}
-            className="bg-slate-800 hover:bg-slate-700 hover:shadow-2xl p-4 rounded-t-3xl rounded-l-3xl shadow relative hover:scale-105 transition duration-300 cursor-pointer"
+            className={`bg-slate-800 hover:bg-slate-700 hover:shadow-2xl p-4 rounded-t-3xl rounded-l-3xl shadow relative hover:scale-105 transition duration-300 cursor-pointer transform  ease-out ${
+              isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
           >
             {/* Corazón de favoritos */}
             <button
