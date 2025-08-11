@@ -72,7 +72,7 @@ const Home: React.FC = () => {
 
       <div
         ref={ref}
-        className={`py-4 px-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 ${
+        className={`py-4 px-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 transform transition-all duration-700 ease-out ${
           isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
