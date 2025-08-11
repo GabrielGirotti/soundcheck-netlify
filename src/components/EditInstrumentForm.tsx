@@ -180,7 +180,17 @@ const EditInstrumentForm: React.FC = () => {
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Error al editar instrumento");
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Aquí chequeamos si el error es por tamaño de imagen
+        if (data.message && data.message.includes("2MB")) {
+          toast.error(data.message);
+        } else {
+          toast.error("Error al publicar instrumento");
+        }
+        return;
+      }
 
       toast.success("Instrumento editado con éxito");
       navigate("/panel");
