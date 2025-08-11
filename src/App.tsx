@@ -154,21 +154,99 @@ const App: React.FC = () => {
           </div>
         </nav>
       ) : (
-        <nav className="bg-gray-900 p-4 flex justify-center items-center text-white">
+        <nav className="bg-gray-900 py-4 px-8 flex justify-between items-center text-white relative">
           <Link
             to="/"
             className="bg-gradient-to-r from-orange-400 to-pink-600 inline-block text-transparent bg-clip-text font-bold text-2xl"
           >
             SoundCheck
           </Link>
+
+          {/* Desktop nav */}
+          <div className="space-x-4 md:flex hidden md:flex-row flex-col items-center justify-end w-full p-4">
+            <nav className="flex gap-4">
+              <Link to="/login" className="hover:underline">
+                iniciar sesión
+              </Link>
+              <Link to="/register" className="hover:underline">
+                registrarse
+              </Link>
+            </nav>
+          </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden flex items-center justify-center"
+            onClick={() => setMenuOpen(true)}
+            aria-label="Abrir menú"
+          >
+            <svg
+              className="w-8 h-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 8h16M4 16h16"
+              />
+            </svg>
+          </button>
+
+          {/* Mobile menu overlay SIEMPRE MONTADO */}
+          <div className="fixed inset-0 z-50 flex justify-center items-center pointer-events-none">
+            <div
+              className={`flex flex-col justify-center items-center w-full h-full
+                transition-all duration-500 ease-in-out
+                ${
+                  menuOpen
+                    ? "translate-x-0 opacity-100 pointer-events-auto"
+                    : "-translate-x-full opacity-0 pointer-events-none"
+                }
+                bg-slate-900`}
+              style={{ position: "absolute", left: 0, top: 0 }}
+            >
+              <button
+                className="absolute top-3 right-9 text-white text-4xl"
+                onClick={() => setMenuOpen(false)}
+                aria-label="Cerrar menú"
+              >
+                &times;
+              </button>
+              <Link
+                to="/"
+                onClick={() => setMenuOpen(false)}
+                className="absolute top-4 bg-gradient-to-r from-orange-400 to-pink-600 inline-block text-transparent bg-clip-text font-bold text-2xl "
+              >
+                SoundCheck
+              </Link>
+              <span className="mb-8 text-xl">Hola {username}</span>
+              <div></div>
+              <nav className="flex flex-col gap-6 mt-8 items-center">
+                <Link
+                  to="/login"
+                  className="underline-effect"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  iniciar sesión
+                </Link>
+                <Link
+                  to="/register"
+                  className="underline-effect"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  registrarse
+                </Link>
+              </nav>
+            </div>
+          </div>
         </nav>
       )}
 
       <Routes>
-        <Route
-          path="/"
-          element={token ? <Home /> : <Navigate to="/login" replace />}
-        />
+        <Route path="/" element={<Home />} />
         <Route
           path="/new"
           element={
@@ -191,8 +269,22 @@ const App: React.FC = () => {
         />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/panel" element={<UserPanel username={username} />} />
-        <Route path="/edit-instrument/:id" element={<EditInstrumentForm />} />
+        <Route
+          path="/panel"
+          element={
+            token ? (
+              <UserPanel username={username} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/edit-instrument/:id"
+          element={
+            token ? <EditInstrumentForm /> : <Navigate to="/login" replace />
+          }
+        />
         <Route path="/show-instrument/:id" element={<ShowInstrument />} />
       </Routes>
       <Footer />
