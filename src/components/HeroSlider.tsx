@@ -70,7 +70,7 @@ const HeroSlider: React.FC = () => {
                   {slide.description}
                 </p>
                 <span className="absolute bottom-0 right-0 bg-gradient-to-r hover:bg-gradient-to-l from-orange-400 to-pink-600 text-white text-xl font-semibold pr-4 pl-8 pb-4 pt-8 rounded-tl-full shadow-lg">
-                  ${slide.price}
+                  €{slide.price}
                 </span>
               </div>
             </div>

@@ -275,7 +275,7 @@ const EditInstrumentForm: React.FC = () => {
           ))}
         </select>
 
-        <label className="block mb-2 text-gray-300">Precio</label>
+        <label className="block mb-2 text-gray-300">Precio (€)</label>
         <input
           type="number"
           value={price}

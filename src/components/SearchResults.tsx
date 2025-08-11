@@ -118,7 +118,7 @@ const SearchResults: React.FC = () => {
             <h3 className="text-white text-xl font-semibold">{inst.title}</h3>
             <p className="text-gray-400 pr-16 md:pr-24">{inst.description}</p>
             <div className="absolute bottom-0 right-0 bg-gradient-to-r hover:bg-gradient-to-l from-orange-400 to-pink-600 text-white text-xl font-semibold pr-4 pl-8 pb-4 pt-8 rounded-tl-full shadow-lg">
-              ${inst.price}
+              €{inst.price}
             </div>
           </div>
         ))}
