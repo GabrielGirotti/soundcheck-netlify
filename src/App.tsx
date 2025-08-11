@@ -165,10 +165,10 @@ const App: React.FC = () => {
           {/* Desktop nav */}
           <div className="space-x-4 md:flex hidden md:flex-row flex-col items-center justify-end w-full p-4">
             <nav className="flex gap-4">
-              <Link to="/login" className="hover:underline">
+              <Link to="/login" className="underline-effect">
                 iniciar sesión
               </Link>
-              <Link to="/register" className="hover:underline">
+              <Link to="/register" className="underline-effect">
                 registrarse
               </Link>
             </nav>
@@ -222,7 +222,7 @@ const App: React.FC = () => {
               >
                 SoundCheck
               </Link>
-              <span className="mb-8 text-xl">Hola {username}</span>
+
               <div></div>
               <nav className="flex flex-col gap-6 mt-8 items-center">
                 <Link

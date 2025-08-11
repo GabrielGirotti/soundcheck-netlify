@@ -19,7 +19,15 @@ const ShowInstrument = () => {
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const API_URL = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    // Verificar si está logueado (ejemplo con token en localStorage)
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
 
   useEffect(() => {
     // Cargar datos actuales del instrumento
@@ -81,12 +89,23 @@ const ShowInstrument = () => {
             €{price}
           </span>
         </div>
-        <button
-          onClick={() => navigate("")}
-          className="w-[90vw] max-w-[500px] mx-auto mt-6 px-6 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition"
-        >
-          Contactar con el vendedor
-        </button>
+
+        {isLoggedIn ? (
+          <button
+            onClick={() => navigate("")}
+            className="w-[90vw] max-w-[500px] mx-auto mt-6 px-6 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition"
+          >
+            Contactar con el vendedor
+          </button>
+        ) : (
+          <button
+            onClick={() => navigate("/login")}
+            className="w-[90vw] max-w-[500px] mx-auto mt-6 px-6 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition"
+          >
+            Iniciar sesión para contactar al vendedor
+          </button>
+        )}
+
         <button
           onClick={() => navigate("/")}
           className="w-[90vw] max-w-[500px] hover:text-orange-400 text-slate-300 transition duration-300 border border-orange-400 text-xs p-2 rounded text-center mt-4 mx-auto"
