@@ -50,11 +50,15 @@ const Home: React.FC = () => {
     b._id > a._id ? 1 : -1
   );
 
-  const filteredInstruments = sortedInstruments.filter(
-    (inst) =>
-      (!selectedCategory || inst.category === selectedCategory) &&
-      inst.user !== username
-  );
+  const filteredInstruments = sortedInstruments.filter((inst) => {
+    if (!selectedCategory || inst.category === selectedCategory) {
+      if (username) {
+        return inst.user !== username;
+      }
+      return true; // si no hay usuario, muestra todo
+    }
+    return false;
+  });
 
   const handleClick = (_id: string) => {
     navigate(`show-instrument/${_id}`);
