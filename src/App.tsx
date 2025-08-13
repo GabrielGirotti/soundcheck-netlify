@@ -19,6 +19,7 @@ import EditInstrumentForm from "./components/EditInstrumentForm";
 import ShowInstrument from "./components/ShowInstrument";
 
 import { Toaster } from "react-hot-toast";
+import MessagesList from "./components/MessagesList";
 
 const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -285,6 +286,10 @@ const App: React.FC = () => {
           }
         />
         <Route path="/show-instrument/:id" element={<ShowInstrument />} />
+        <Route
+          path="/messages"
+          element={token ? <MessagesList /> : <Navigate to="/login" replace />}
+        />
       </Routes>
       <Footer />
 
