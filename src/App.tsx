@@ -27,6 +27,17 @@ const App: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      fetch("https://soundcheck-backend.onrender.com/warmup")
+        .then((res) => res.json())
+        .then((data) => console.log("Warmup hecho:", data))
+        .catch((err) => console.error("Error en warmup:", err));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUsername = localStorage.getItem("username");
     if (storedToken && storedUsername) {
