@@ -159,13 +159,13 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
             </div>
           ))
         )}
+        <Link
+          to="/new"
+          className="mt-4 px-6 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition duration-300"
+        >
+          Publicar un producto
+        </Link>
       </div>
-      <Link
-        to="/new"
-        className="mt-10 px-6 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition duration-300"
-      >
-        Publicar un producto
-      </Link>
 
       <h3 className="text-lg text-white mt-10 mb-4">Tus favoritos:</h3>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">

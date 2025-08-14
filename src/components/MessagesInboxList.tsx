@@ -83,11 +83,11 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({
       {conversations.map((conv) => (
         <div
           key={conv.userId}
-          className="p-3 border rounded hover:bg-gray-100 cursor-pointer"
+          className="p-3 rounded hover:bg-slate-800 hover:scale-105 transition duration-300 cursor-pointer bg-slate-700 shadow-xl"
           onClick={() => navigate(`/messages/${conv.userId}`)}
         >
           <p className="font-semibold">{conv.username}</p>
-          <p className="text-sm text-gray-600 truncate">{conv.lastMessage}</p>
+          <p className="text-sm text-gray-400 truncate">{conv.lastMessage}</p>
           <span className="text-xs text-gray-400">
             {new Date(conv.lastMessageDate).toLocaleString()}
           </span>

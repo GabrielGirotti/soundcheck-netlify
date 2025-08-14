@@ -89,15 +89,15 @@ const App: React.FC = () => {
               <Link to="/new" className="underline-effect">
                 Vender
               </Link>
-              <Link to="/panel" className="underline-effect">
-                Mi panel
-              </Link>
               <button
                 onClick={handleMessagesClick}
                 className="underline-effect"
               >
                 Mensajes
               </button>
+              <Link to="/panel" className="underline-effect">
+                Mi panel
+              </Link>
 
               <button onClick={handleLogout} className="underline-effect">
                 Salir
@@ -165,6 +165,12 @@ const App: React.FC = () => {
                 >
                   Vender
                 </Link>
+                <button
+                  onClick={handleMessagesClick}
+                  className="underline-effect"
+                >
+                  Mensajes
+                </button>
                 <Link
                   to="/panel"
                   className="underline-effect"
@@ -172,12 +178,7 @@ const App: React.FC = () => {
                 >
                   Mi panel
                 </Link>
-                <button
-                  onClick={handleMessagesClick}
-                  className="underline-effect"
-                >
-                  Mensajes
-                </button>
+
                 <button onClick={handleLogout} className="underline-effect">
                   Salir
                 </button>

@@ -101,7 +101,7 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
       <div className="flex gap-2 mt-4">
         <input
           type="text"
-          className="flex-1 p-2 border rounded"
+          className="flex-1 p-2 border rounded bg-slate-700"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Escribe un mensaje..."
