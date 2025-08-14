@@ -35,14 +35,14 @@ const ShowInstrument = () => {
       try {
         const res = await fetch(`${API_URL}/instruments/${id}`);
         const data = await res.json();
-           console.log(data)
+           console.log(`esto es data: ${data}`)
         setTitle(data.title);
         setPrice(data.price);
         setDescription(data.description);
         setCategory(data.category);
         setLocation(data.location);
         setImagePreviews(data.imageUrls?.map((url: string) => `${url}`) || []);
-        setUser(data.userId?.username || "Usuario desconocido");
+        setUser(data.user);
         setUserId({ _id: data.userId });
      
        
@@ -125,7 +125,7 @@ const ShowInstrument = () => {
           </div>
 
           <p className="mt-2 text-xs md:text-sm pr-20 md:pr-24 italic text-slate-500">
-            Publicado por {user}
+            Publicado por {user ? user : "Usuario desconocido"}
           </p>
           <span className="absolute bottom-0 right-0 bg-gradient-to-r hover:bg-gradient-to-l from-orange-400 to-pink-600 text-white text-xl font-semibold pr-4 pl-8 pb-4 pt-8 rounded-tl-full shadow-lg">
             €{price}
