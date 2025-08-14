@@ -20,6 +20,11 @@ import ShowInstrument from "./components/ShowInstrument";
 
 import { Toaster } from "react-hot-toast";
 
+import { jwtDecode } from "jwt-decode";
+
+import MessagesInbox from "./components/MessagesInbox";
+import MessagesInboxList from "./components/MessagesInboxList";
+
 const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
@@ -51,6 +56,21 @@ const App: React.FC = () => {
     navigate(`/login`);
   };
 
+  let currentUserId: string | null = null;
+  if (token) {
+    try {
+      const decoded = jwtDecode<{ id: string }>(token); // Cambia 'id' según tu payload
+      currentUserId = decoded.id;
+    } catch (err) {
+      console.error("Token inválido:", err);
+    }
+  }
+
+  const handleMessagesClick = () => {
+    navigate("/messages");
+    setMenuOpen(false);
+  };
+
   return (
     <>
       {token ? (
@@ -69,9 +89,16 @@ const App: React.FC = () => {
               <Link to="/new" className="underline-effect">
                 Vender
               </Link>
+              <button
+                onClick={handleMessagesClick}
+                className="underline-effect"
+              >
+                Mensajes
+              </button>
               <Link to="/panel" className="underline-effect">
                 Mi panel
               </Link>
+
               <button onClick={handleLogout} className="underline-effect">
                 Salir
               </button>
@@ -102,7 +129,7 @@ const App: React.FC = () => {
           {/* Mobile menu overlay SIEMPRE MONTADO */}
           <div className="fixed inset-0 z-50 flex justify-center items-center pointer-events-none">
             <div
-              className={`flex flex-col justify-center items-center w-full h-full
+              className={`flex flex-col pt-20 items-center w-full h-full
                 transition-all duration-500 ease-in-out
                 ${
                   menuOpen
@@ -138,6 +165,12 @@ const App: React.FC = () => {
                 >
                   Vender
                 </Link>
+                <button
+                  onClick={handleMessagesClick}
+                  className="underline-effect"
+                >
+                  Mensajes
+                </button>
                 <Link
                   to="/panel"
                   className="underline-effect"
@@ -145,6 +178,7 @@ const App: React.FC = () => {
                 >
                   Mi panel
                 </Link>
+
                 <button onClick={handleLogout} className="underline-effect">
                   Salir
                 </button>
@@ -197,7 +231,7 @@ const App: React.FC = () => {
           {/* Mobile menu overlay SIEMPRE MONTADO */}
           <div className="fixed inset-0 z-50 flex justify-center items-center pointer-events-none">
             <div
-              className={`flex flex-col justify-center items-center w-full h-full
+              className={`flex flex-col pt-20 items-center w-full h-full
                 transition-all duration-500 ease-in-out
                 ${
                   menuOpen
@@ -285,6 +319,26 @@ const App: React.FC = () => {
           }
         />
         <Route path="/show-instrument/:id" element={<ShowInstrument />} />
+        <Route
+          path="/messages"
+          element={
+            token ? (
+              <MessagesInboxList currentUserId={currentUserId} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/messages/:otherUserId"
+          element={
+            token ? (
+              <MessagesInbox currentUserId={currentUserId} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
       </Routes>
       <Footer />
 

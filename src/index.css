@@ -19,3 +19,17 @@
     @apply p-4 font-sans text-base uppercase cursor-pointer font-extrabold text-white;
   }  
 }
+
+/* Quitar spinners de los inputs number */
+
+/* Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

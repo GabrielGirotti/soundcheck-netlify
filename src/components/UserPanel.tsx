@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
 import { CiLocationOn } from "react-icons/ci";
@@ -109,7 +109,7 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
       <h3 className="text-lg text-white mb-4">
         Estos son tus productos publicados:
       </h3>
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mb-6">
         {instruments.length === 0 ? (
           <div className="text-white">No has publicado productos aún.</div>
         ) : (
@@ -160,6 +160,12 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
           ))
         )}
       </div>
+      <Link
+        to="/new"
+        className="mt-4 px-6 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition duration-300"
+      >
+        Publicar un producto
+      </Link>
 
       <h3 className="text-lg text-white mt-10 mb-4">Tus favoritos:</h3>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">

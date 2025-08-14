@@ -14,23 +14,23 @@ const ShowInstrument = () => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [category, setCategory] = useState("");
   const [user, setUser] = useState("");
+  const [userId, setUserId] = useState<{ _id: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState("");
-
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [showMessageBox, setShowMessageBox] = useState(false);
+  const [message, setMessage] = useState("");
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    // Verificar si está logueado (ejemplo con token en localStorage)
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
   useEffect(() => {
-    // Cargar datos actuales del instrumento
     const fetchInstrument = async () => {
       try {
         const res = await fetch(`${API_URL}/instruments/${id}`);
@@ -42,6 +42,7 @@ const ShowInstrument = () => {
         setLocation(data.location);
         setImagePreviews(data.imageUrls?.map((url: string) => `${url}`) || []);
         setUser(data.user);
+        setUserId({ _id: data.userId });
       } catch (error) {
         toast.error("No se pudo cargar el instrumento");
         navigate("/");
@@ -52,11 +53,47 @@ const ShowInstrument = () => {
     fetchInstrument();
   }, [id, navigate]);
 
+  const handleSendMessage = async () => {
+    if (!message.trim()) {
+      toast.error("El mensaje no puede estar vacío");
+      return;
+    }
+
+    if (!userId?._id) {
+      toast.error("No se encontró el usuario receptor");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          receiver: userId._id,
+          content: message,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Error al enviar el mensaje");
+
+      toast.success("Mensaje enviado correctamente");
+      setMessage("");
+      setShowMessageBox(false);
+    } catch (err) {
+      toast.error("No se pudo enviar el mensaje");
+    }
+  };
+
   if (loading) return <Spinner />;
 
   return (
     <>
       <div className="flex flex-col p-4 items-center">
+        {/* Imagenes */}
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
           {imagePreviews.map((url, index) => (
             <img
@@ -69,10 +106,10 @@ const ShowInstrument = () => {
           ))}
         </div>
 
+        {/* Detalles */}
         <div className="bg-black/50 p-6 rounded-xl w-[90vw] max-w-[500px] relative mt-4 mx-auto">
           <p className="text-xs text-slate-500 mb-2">{category}</p>
           <h2 className="text-2xl md:text-4xl font-bold pr-14">{title}</h2>
-
           <p className="mt-2 text-sm md:text-base pr-20 md:pr-24">
             {description}
           </p>
@@ -90,12 +127,13 @@ const ShowInstrument = () => {
           </span>
         </div>
 
+        {/* Botón de contacto */}
         {isLoggedIn ? (
           <button
-            onClick={() => navigate("")}
+            onClick={() => setShowMessageBox(!showMessageBox)}
             className="w-[90vw] max-w-[500px] mx-auto mt-6 px-6 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition"
           >
-            Contactar con el vendedor
+            {showMessageBox ? "Cancelar" : "Contactar con el vendedor"}
           </button>
         ) : (
           <button
@@ -106,6 +144,26 @@ const ShowInstrument = () => {
           </button>
         )}
 
+        {/* Caja de mensaje */}
+        {showMessageBox && (
+          <div className="w-[90vw] max-w-[500px] mt-4 p-4 bg-slate-800 rounded-lg">
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={4}
+              placeholder="Escribe tu mensaje..."
+              className="w-full p-2 rounded bg-slate-900 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
+            />
+            <button
+              onClick={handleSendMessage}
+              className="mt-3 w-full px-6 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition"
+            >
+              Enviar mensaje
+            </button>
+          </div>
+        )}
+
+        {/* Volver */}
         <button
           onClick={() => navigate("/")}
           className="w-[90vw] max-w-[500px] hover:text-orange-400 text-slate-300 transition duration-300 border border-orange-400 text-xs p-2 rounded text-center mt-4 mx-auto"
@@ -114,6 +172,7 @@ const ShowInstrument = () => {
         </button>
       </div>
 
+      {/* Imagen ampliada */}
       {selectedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"

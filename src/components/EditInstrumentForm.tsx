@@ -291,6 +291,7 @@ const EditInstrumentForm: React.FC = () => {
         <label className="block mb-2 text-gray-300">Precio (€)</label>
         <input
           type="number"
+          onWheel={(e) => e.currentTarget.blur()}
           value={price}
           onChange={(e) => setPrice(Number(e.target.value))}
           className="w-full p-2 rounded bg-gray-700 text-white mb-4"

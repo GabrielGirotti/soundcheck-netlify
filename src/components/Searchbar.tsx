@@ -50,7 +50,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   };
 
   return (
-    <div className="w-full max-w-md relative">
+    <div className="w-full md:max-w-sm max-w-[70vw] relative">
       <form className="relative text-white" onSubmit={handleSubmit}>
         <input
           type="text"
