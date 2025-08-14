@@ -1,76 +1,50 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Spinner from "./Spinner";
 
 interface MessagesInboxProps {
   currentUserId: string | null;
-  otherUserId: string;
 }
 
-const MessagesInbox: React.FC<MessagesInboxProps> = ({
-  currentUserId,
-  otherUserId,
-}) => {
+const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
+  const { otherUserId } = useParams<{ otherUserId: string }>();
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState("");
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const fetchMessages = async () => {
-    if (!currentUserId) return;
-
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No hay token");
-
-      const res = await fetch(`${API_URL}/messages`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!res.ok) throw new Error("Error al cargar mensajes");
-
-      const data = await res.json();
-
-      const filtered = data.filter(
-        (msg: any) =>
-          (msg.sender._id === currentUserId &&
-            msg.receiver._id === otherUserId) ||
-          (msg.sender._id === otherUserId && msg.receiver._id === currentUserId)
-      );
-
-      setMessages(filtered);
-    } catch (err) {
-      console.error(err);
-      toast.error("No se pudieron cargar los mensajes");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    if (!currentUserId || !otherUserId) return;
+
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No hay token");
+
+        const res = await fetch(
+          `${API_URL}/messages?user1=${currentUserId}&user2=${otherUserId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!res.ok) throw new Error("Error al cargar mensajes");
+
+        const data = await res.json();
+        setMessages(data);
+      } catch (err) {
+        console.error(err);
+        toast.error("No se pudieron cargar los mensajes");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchMessages();
-    const interval = setInterval(fetchMessages, 3000); // polling cada 3s
-    return () => clearInterval(interval);
   }, [currentUserId, otherUserId]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   const sendMessage = async () => {
-    if (!newMessage.trim() || !currentUserId) return;
-
-    // Validación del receptor
-    if (!otherUserId || !/^[0-9a-fA-F]{24}$/.test(otherUserId)) {
-      toast.error("Usuario receptor inválido");
-      return;
-    }
+    if (!newMessage.trim() || !currentUserId || !otherUserId) return;
 
     try {
       const token = localStorage.getItem("token");
@@ -83,7 +57,8 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          receiver: otherUserId, // solo esto
+          sender: currentUserId,
+          receiver: otherUserId,
           content: newMessage,
         }),
       });
@@ -102,14 +77,14 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
   if (loading) return <Spinner />;
 
   return (
-    <div className="flex flex-col gap-2 max-w-[500px] mx-auto p-4 h-[80vh] overflow-y-auto">
+    <div className="flex flex-col gap-2 max-w-[500px] mx-auto p-4">
       {messages.length === 0 ? (
         <p>No hay mensajes.</p>
       ) : (
         messages.map((msg) => (
           <div
             key={msg._id}
-            className={`p-2 rounded max-w-[80%] ${
+            className={`p-2 rounded ${
               msg.sender._id === currentUserId
                 ? "bg-slate-700 self-end"
                 : "bg-orange-400 self-start"
@@ -123,8 +98,6 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
         ))
       )}
 
-      <div ref={messagesEndRef} />
-
       <div className="flex gap-2 mt-4">
         <input
           type="text"
@@ -132,7 +105,6 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Escribe un mensaje..."
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
         <button
           className="bg-orange-400 text-white px-4 rounded"

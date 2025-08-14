@@ -312,10 +312,10 @@ const App: React.FC = () => {
         />
         <Route path="/show-instrument/:id" element={<ShowInstrument />} />
         <Route
-          path="/messages"
+          path="/messages/:otherUserId"
           element={
             token ? (
-              <MessagesInbox currentUserId={currentUserId} otherUserId={""} />
+              <MessagesInbox currentUserId={currentUserId} />
             ) : (
               <Navigate to="/login" replace />
             )
