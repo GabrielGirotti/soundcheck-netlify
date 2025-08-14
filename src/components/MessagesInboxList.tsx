@@ -14,7 +14,9 @@ interface Conversation {
   lastMessageDate: string;
 }
 
-const MessagesInboxList: React.FC<MessagesInboxListProps> = ({ currentUserId }) => {
+const MessagesInboxList: React.FC<MessagesInboxListProps> = ({
+  currentUserId,
+}) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -40,10 +42,15 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({ currentUserId }) 
         const convMap: Record<string, Conversation> = {};
 
         data.forEach((msg: any) => {
-          const otherUser = msg.sender._id === currentUserId ? msg.receiver : msg.sender;
+          const otherUser =
+            msg.sender._id === currentUserId ? msg.receiver : msg.sender;
           const lastMessageDate = new Date(msg.createdAt).toISOString();
 
-          if (!convMap[otherUser._id] || new Date(convMap[otherUser._id].lastMessageDate) < new Date(lastMessageDate)) {
+          if (
+            !convMap[otherUser._id] ||
+            new Date(convMap[otherUser._id].lastMessageDate) <
+              new Date(lastMessageDate)
+          ) {
             convMap[otherUser._id] = {
               userId: otherUser._id,
               username: otherUser.username,
@@ -67,10 +74,12 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({ currentUserId }) 
 
   if (loading) return <Spinner />;
 
-  if (conversations.length === 0) return <p className="p-4">No tienes conversaciones.</p>;
+  if (conversations.length === 0)
+    return <p className="p-4">No tienes conversaciones.</p>;
 
   return (
     <div className="max-w-md mx-auto p-4 flex flex-col gap-2">
+      <h3 className="text-lg text-white mb-4">Estos son tus mensajes:</h3>
       {conversations.map((conv) => (
         <div
           key={conv.userId}
