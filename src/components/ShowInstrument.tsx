@@ -43,6 +43,8 @@ const ShowInstrument = () => {
         setImagePreviews(data.imageUrls?.map((url: string) => `${url}`) || []);
         setUser(data.user);
         setUserId({ _id: data.userId });
+        console.log(`esto es data: ${data}`)
+       
       } catch (error) {
         toast.error("No se pudo cargar el instrumento");
         navigate("/");
@@ -52,6 +54,8 @@ const ShowInstrument = () => {
     };
     fetchInstrument();
   }, [id, navigate]);
+
+  console.log(`esto es user: ${user}`)
 
   const handleSendMessage = async () => {
     if (!message.trim()) {
