@@ -35,6 +35,7 @@ const ShowInstrument = () => {
       try {
         const res = await fetch(`${API_URL}/instruments/${id}`);
         const data = await res.json();
+           console.log(data)
         setTitle(data.title);
         setPrice(data.price);
         setDescription(data.description);
@@ -43,7 +44,7 @@ const ShowInstrument = () => {
         setImagePreviews(data.imageUrls?.map((url: string) => `${url}`) || []);
         setUser(data.user);
         setUserId({ _id: data.userId });
-        console.log(`esto es data: ${data}`)
+     
        
       } catch (error) {
         toast.error("No se pudo cargar el instrumento");
