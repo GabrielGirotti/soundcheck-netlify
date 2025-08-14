@@ -5,9 +5,13 @@ import Spinner from "./Spinner";
 
 interface MessagesInboxProps {
   currentUserId: string | null;
+  currentUsername: string | null;
 }
 
-const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
+const MessagesInbox: React.FC<MessagesInboxProps> = ({
+  currentUserId,
+  currentUsername,
+}) => {
   const { otherUserId } = useParams<{ otherUserId: string }>();
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,7 +76,7 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
         ...prev,
         {
           ...data,
-          sender: { _id: currentUserId },
+          sender: { _id: currentUserId, username: currentUsername },
         },
       ]);
 
@@ -99,6 +103,13 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
                 : "bg-slate-800 self-start"
             }`}
           >
+            <p className="text-xs font-semibold text-orange-400">
+              {msg.sender.username ||
+                (msg.sender._id === currentUserId
+                  ? currentUsername
+                  : "Usuario")}{" "}
+              dice:
+            </p>
             <p className="text-sm">{msg.content}</p>
             <span className="text-xs text-gray-400">
               {new Date(msg.createdAt).toLocaleString()}

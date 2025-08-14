@@ -132,7 +132,10 @@ const App: React.FC = () => {
           path="/messages/:otherUserId"
           element={
             token ? (
-              <MessagesInbox currentUserId={currentUserId} />
+              <MessagesInbox
+                currentUserId={currentUserId}
+                currentUsername={username}
+              />
             ) : (
               <Navigate to="/login" replace />
             )
