@@ -27,7 +27,7 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
         if (!token) throw new Error("No hay token");
 
         const res = await fetch(
-          `${API_URL}/messages?user1=${currentUserId}&user2=${otherUserId}`,
+          `${API_URL}/messages/conversation/${otherUserId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
