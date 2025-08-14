@@ -16,6 +16,16 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const handleLogoutClick = () => {
+    handleLogout(); // función que viene de App
+    setMenuOpen(false); // cerrar menú
+  };
+
+  const handleMessagesClickNav = () => {
+    handleMessagesClick(); // función de App
+    setMenuOpen(false); // cerrar menú
+  };
+
   return (
     <nav className="bg-gray-900 py-4 px-8 flex justify-between items-center text-white relative">
       <Link
@@ -35,7 +45,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 Vender
               </Link>
               <button
-                onClick={handleMessagesClick}
+                onClick={handleMessagesClickNav}
                 className="underline-effect"
               >
                 Mensajes
@@ -43,7 +53,7 @@ const Navbar: React.FC<NavbarProps> = ({
               <Link to="/panel" className="underline-effect">
                 Mi panel
               </Link>
-              <button onClick={handleLogout} className="underline-effect">
+              <button onClick={handleLogoutClick} className="underline-effect">
                 Salir
               </button>
             </>
@@ -119,7 +129,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   Vender
                 </Link>
                 <button
-                  onClick={handleMessagesClick}
+                  onClick={handleMessagesClickNav}
                   className="underline-effect"
                 >
                   Mensajes
@@ -131,7 +141,10 @@ const Navbar: React.FC<NavbarProps> = ({
                 >
                   Mi panel
                 </Link>
-                <button onClick={handleLogout} className="underline-effect">
+                <button
+                  onClick={handleLogoutClick}
+                  className="underline-effect"
+                >
                   Salir
                 </button>
               </>
