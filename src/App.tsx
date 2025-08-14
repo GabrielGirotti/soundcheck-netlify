@@ -129,7 +129,7 @@ const App: React.FC = () => {
           {/* Mobile menu overlay SIEMPRE MONTADO */}
           <div className="fixed inset-0 z-50 flex justify-center items-center pointer-events-none">
             <div
-              className={`flex flex-col justify-center items-center w-full h-full
+              className={`flex flex-col pt-20 items-center w-full h-full
                 transition-all duration-500 ease-in-out
                 ${
                   menuOpen
@@ -224,7 +224,7 @@ const App: React.FC = () => {
           {/* Mobile menu overlay SIEMPRE MONTADO */}
           <div className="fixed inset-0 z-50 flex justify-center items-center pointer-events-none">
             <div
-              className={`flex flex-col justify-center items-center w-full h-full
+              className={`flex flex-col pt-20 items-center w-full h-full
                 transition-all duration-500 ease-in-out
                 ${
                   menuOpen

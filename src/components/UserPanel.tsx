@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
 import { CiLocationOn } from "react-icons/ci";
@@ -160,6 +160,9 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
           ))
         )}
       </div>
+      <Link to="/new" className="underline-effect">
+        Publicar un producto
+      </Link>
 
       <h3 className="text-lg text-white mt-10 mb-4">Tus favoritos:</h3>
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
