@@ -14,27 +14,37 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const API_URL = import.meta.env.VITE_API_URL;
 
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const fetchMessages = async () => {
-    if (!currentUserId || !otherUserId) return;
+    if (!currentUserId) return;
 
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No hay token");
 
-      const res = await fetch(
-        `${API_URL}/messages?user1=${currentUserId}&user2=${otherUserId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await fetch(`${API_URL}/messages`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (!res.ok) throw new Error("Error al cargar mensajes");
 
       const data = await res.json();
-      setMessages(data);
+
+      const filtered = data.filter(
+        (msg: any) =>
+          (msg.sender._id === currentUserId &&
+            msg.receiver._id === otherUserId) ||
+          (msg.sender._id === otherUserId && msg.receiver._id === currentUserId)
+      );
+
+      setMessages(filtered);
     } catch (err) {
       console.error(err);
       toast.error("No se pudieron cargar los mensajes");
@@ -43,24 +53,31 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
     }
   };
 
-  // Refrescar mensajes cada 3 segundos
   useEffect(() => {
-    fetchMessages(); // Traer mensajes al cargar
-
-    const interval = setInterval(() => {
-      fetchMessages();
-    }, 3000);
-
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 3000); // polling cada 3s
     return () => clearInterval(interval);
   }, [currentUserId, otherUserId]);
 
-  // Hacer scroll al último mensaje cada vez que cambie messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollToBottom();
   }, [messages]);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !currentUserId) return;
+
+    const tempMessage = {
+      _id: Math.random().toString(36), // ID temporal
+      sender: { _id: currentUserId },
+      receiver: { _id: otherUserId },
+      content: newMessage,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Mostrar mensaje inmediatamente
+    setMessages((prev) => [...prev, tempMessage]);
+    setNewMessage("");
+    scrollToBottom();
 
     try {
       const token = localStorage.getItem("token");
@@ -75,33 +92,38 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
         body: JSON.stringify({
           sender: currentUserId,
           receiver: otherUserId,
-          content: newMessage,
+          content: tempMessage.content,
         }),
       });
 
       if (!res.ok) throw new Error("Error al enviar mensaje");
 
       const data = await res.json();
-      setMessages((prev) => [...prev, data]);
-      setNewMessage("");
+
+      // Reemplazar mensaje temporal con el que devuelve el servidor
+      setMessages((prev) =>
+        prev.map((msg) => (msg._id === tempMessage._id ? data : msg))
+      );
     } catch (err) {
       console.error(err);
       toast.error("No se pudo enviar el mensaje");
+      // Eliminar mensaje temporal si falla
+      setMessages((prev) => prev.filter((msg) => msg._id !== tempMessage._id));
     }
   };
 
   if (loading) return <Spinner />;
 
   return (
-    <div className="flex flex-col gap-2 max-w-[500px] mx-auto p-4 h-[70vh] overflow-y-auto">
+    <div className="flex flex-col gap-2 max-w-[500px] mx-auto p-4 h-[80vh] overflow-y-auto">
       {messages.length === 0 ? (
         <p>No hay mensajes.</p>
       ) : (
         messages.map((msg) => (
           <div
             key={msg._id}
-            className={`p-2 rounded ${
-              msg.sender === currentUserId
+            className={`p-2 rounded max-w-[80%] ${
+              msg.sender._id === currentUserId
                 ? "bg-slate-700 self-end"
                 : "bg-orange-400 self-start"
             }`}
@@ -113,7 +135,7 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
           </div>
         ))
       )}
-      {/* Referencia para scroll automático */}
+
       <div ref={messagesEndRef} />
 
       <div className="flex gap-2 mt-4">
@@ -123,9 +145,7 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Escribe un mensaje..."
-          onKeyDown={(e) => {
-            if (e.key === "Enter") sendMessage();
-          }}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
         <button
           className="bg-orange-400 text-white px-4 rounded"
