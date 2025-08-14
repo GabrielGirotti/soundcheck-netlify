@@ -160,7 +160,10 @@ const UserPanel: React.FC<{ username: string | null }> = ({ username }) => {
           ))
         )}
       </div>
-      <Link to="/new" className="underline-effect">
+      <Link
+        to="/new"
+        className="mt-6 px-6 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition"
+      >
         Publicar un producto
       </Link>
 

@@ -172,6 +172,12 @@ const App: React.FC = () => {
                 >
                   Mi panel
                 </Link>
+                <button
+                  onClick={handleMessagesClick}
+                  className="underline-effect"
+                >
+                  Mensajes
+                </button>
                 <button onClick={handleLogout} className="underline-effect">
                   Salir
                 </button>
