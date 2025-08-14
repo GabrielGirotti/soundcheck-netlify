@@ -21,23 +21,50 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const API_URL = import.meta.env.VITE_API_URL;
 
+  //   useEffect(() => {
+  //     const fetchUnread = async () => {
+  //       try {
+  //         const res = await fetch(`${API_URL}/messages/unread-count`, {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         });
+  //         const data = await res.json();
+  //         setUnreadCount(data.unreadCount);
+  //       } catch (err) {
+  //         console.error(err);
+  //       }
+  //     };
+
+  //     fetchUnread();
+  //     const interval = setInterval(fetchUnread, 5000); // refresca cada 5s
+  //     return () => clearInterval(interval);
+  //   }, [token]);
+
   useEffect(() => {
     const fetchUnread = async () => {
       try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
         const res = await fetch(`${API_URL}/messages/unread-count`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        if (res.status === 401) {
+          console.warn("⚠️ Token inválido o expirado");
+          return;
+        }
+
         const data = await res.json();
         setUnreadCount(data.unreadCount);
       } catch (err) {
-        console.error(err);
+        console.error("Error obteniendo unread count:", err);
       }
     };
 
     fetchUnread();
-    const interval = setInterval(fetchUnread, 5000); // refresca cada 5s
+    const interval = setInterval(fetchUnread, 5000);
     return () => clearInterval(interval);
-  }, [token]);
+  }, [API_URL]);
 
   const handleLogoutClick = () => {
     handleLogout(); // función que viene de App
