@@ -13,9 +13,8 @@ const ShowInstrument = () => {
   const [description, setDescription] = useState("");
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [category, setCategory] = useState("");
-  const [user, setUser] = useState<{ _id: string; username: string } | null>(
-    null
-  );
+  const [user, setUser] = useState("");
+  const [userId, setUserId] = useState<{ _id: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -44,6 +43,7 @@ const ShowInstrument = () => {
         setLocation(data.location);
         setImagePreviews(data.imageUrls?.map((url: string) => `${url}`) || []);
         setUser(data.user);
+        setUserId(data._id);
       } catch (error) {
         toast.error("No se pudo cargar el instrumento");
         navigate("/");
@@ -60,7 +60,7 @@ const ShowInstrument = () => {
       return;
     }
 
-    if (!user?._id) {
+    if (!userId?._id) {
       toast.error("No se encontró el usuario receptor");
       return;
     }
@@ -74,7 +74,7 @@ const ShowInstrument = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          receiver: user._id,
+          receiver: userId._id,
           content: message,
         }),
       });
@@ -121,7 +121,7 @@ const ShowInstrument = () => {
           </div>
 
           <p className="mt-2 text-xs md:text-sm pr-20 md:pr-24 italic text-slate-500">
-            Publicado por {user?.username ?? "Usuario desconocido"}
+            Publicado por {user ? user : "Usuario desconocido"}
           </p>
           <span className="absolute bottom-0 right-0 bg-gradient-to-r hover:bg-gradient-to-l from-orange-400 to-pink-600 text-white text-xl font-semibold pr-4 pl-8 pb-4 pt-8 rounded-tl-full shadow-lg">
             €{price}
