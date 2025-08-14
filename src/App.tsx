@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Routes,
-  Route,
-  Link,
-  Navigate,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Routes, Route, Link, Navigate, useNavigate } from "react-router-dom";
 
 import NewInstrumentForm from "./components/NewInstrumentForm";
 import Register from "./components/Register";
@@ -24,7 +17,6 @@ import SearchResults from "./components/SearchResults";
 import ForgotPassword from "./components/ForgotPassword";
 import EditInstrumentForm from "./components/EditInstrumentForm";
 import ShowInstrument from "./components/ShowInstrument";
-
 
 import { Toaster } from "react-hot-toast";
 
@@ -78,17 +70,6 @@ const App: React.FC = () => {
     setMenuOpen(false);
   };
 
-  const ChatWrapper: React.FC<{ currentUserId: string | null }> = ({
-    currentUserId,
-  }) => {
-    const { otherUserId } = useParams<{ otherUserId: string }>();
-    if (!otherUserId || !currentUserId) return null;
-
-    return (
-      <MessagesInbox currentUserId={currentUserId} otherUserId={otherUserId} />
-    );
-  };
-
   return (
     <>
       {token ? (
@@ -116,7 +97,7 @@ const App: React.FC = () => {
               >
                 Mensajes
               </button>
-              
+
               <button onClick={handleLogout} className="underline-effect">
                 Salir
               </button>
@@ -335,17 +316,6 @@ const App: React.FC = () => {
           element={
             token ? (
               <MessagesInbox currentUserId={currentUserId} otherUserId={""} />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        />
-
-        <Route
-          path="/chat/:otherUserId"
-          element={
-            token ? (
-              <ChatWrapper currentUserId={currentUserId} />
             ) : (
               <Navigate to="/login" replace />
             )

@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import Spinner from "./Spinner";
-import { Link } from "react-router-dom";
 
 interface MessagesInboxProps {
   currentUserId: string | null;
@@ -15,36 +14,50 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const API_URL = import.meta.env.VITE_API_URL;
 
+  const fetchMessages = async () => {
+    if (!currentUserId || !otherUserId) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No hay token");
+
+      const res = await fetch(
+        `${API_URL}/messages?user1=${currentUserId}&user2=${otherUserId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) throw new Error("Error al cargar mensajes");
+
+      const data = await res.json();
+      setMessages(data);
+    } catch (err) {
+      console.error(err);
+      toast.error("No se pudieron cargar los mensajes");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Refrescar mensajes cada 3 segundos
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (!currentUserId) return;
+    fetchMessages(); // Traer mensajes al cargar
 
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No hay token");
+    const interval = setInterval(() => {
+      fetchMessages();
+    }, 3000);
 
-        const res = await fetch(
-          `${API_URL}/messages?user1=${currentUserId}&user2=${otherUserId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (!res.ok) throw new Error("Error al cargar mensajes");
-
-        const data = await res.json();
-        setMessages(data);
-      } catch (err) {
-        console.error(err);
-        toast.error("No se pudieron cargar los mensajes");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMessages();
+    return () => clearInterval(interval);
   }, [currentUserId, otherUserId]);
+
+  // Hacer scroll al último mensaje cada vez que cambie messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !currentUserId) return;
@@ -80,8 +93,7 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
   if (loading) return <Spinner />;
 
   return (
-    <div className="flex flex-col gap-2 max-w-[500px] mx-auto p-4">
-        <Link to={`/chat/${otherUserId}`}>Abrir chat</Link>
+    <div className="flex flex-col gap-2 max-w-[500px] mx-auto p-4 h-[70vh] overflow-y-auto">
       {messages.length === 0 ? (
         <p>No hay mensajes.</p>
       ) : (
@@ -101,6 +113,8 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
           </div>
         ))
       )}
+      {/* Referencia para scroll automático */}
+      <div ref={messagesEndRef} />
 
       <div className="flex gap-2 mt-4">
         <input
@@ -109,6 +123,9 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Escribe un mensaje..."
+          onKeyDown={(e) => {
+            if (e.key === "Enter") sendMessage();
+          }}
         />
         <button
           className="bg-orange-400 text-white px-4 rounded"
