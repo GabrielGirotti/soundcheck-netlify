@@ -43,7 +43,7 @@ const ShowInstrument = () => {
         setLocation(data.location);
         setImagePreviews(data.imageUrls?.map((url: string) => `${url}`) || []);
         setUser(data.user);
-        setUserId(data._id);
+        setUserId({ _id: data.userId });
       } catch (error) {
         toast.error("No se pudo cargar el instrumento");
         navigate("/");
