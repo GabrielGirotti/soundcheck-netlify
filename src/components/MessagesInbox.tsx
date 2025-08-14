@@ -86,8 +86,8 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
             key={msg._id}
             className={`p-2 rounded w-[80%] ${
               msg.sender._id === currentUserId
-                ? "bg-slate-700 self-end"
-                : "bg-slate-800 self-start"
+                ? "bg-slate-800 self-start"
+                : "bg-slate-700 self-end"
             }`}
           >
             <p className="text-sm">{msg.content}</p>
