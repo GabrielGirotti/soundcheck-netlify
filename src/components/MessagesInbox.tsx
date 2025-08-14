@@ -66,18 +66,11 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
   const sendMessage = async () => {
     if (!newMessage.trim() || !currentUserId) return;
 
-    const tempMessage = {
-      _id: Math.random().toString(36), // ID temporal
-      sender: { _id: currentUserId },
-      receiver: { _id: otherUserId },
-      content: newMessage,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Mostrar mensaje inmediatamente
-    setMessages((prev) => [...prev, tempMessage]);
-    setNewMessage("");
-    scrollToBottom();
+    // Validación del receptor
+    if (!otherUserId || !/^[0-9a-fA-F]{24}$/.test(otherUserId)) {
+      toast.error("Usuario receptor inválido");
+      return;
+    }
 
     try {
       const token = localStorage.getItem("token");
@@ -90,24 +83,19 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          receiver: otherUserId,
-          content: tempMessage.content,
+          receiver: otherUserId, // solo esto
+          content: newMessage,
         }),
       });
 
       if (!res.ok) throw new Error("Error al enviar mensaje");
 
       const data = await res.json();
-
-      // Reemplazar mensaje temporal con el que devuelve el servidor
-      setMessages((prev) =>
-        prev.map((msg) => (msg._id === tempMessage._id ? data : msg))
-      );
+      setMessages((prev) => [...prev, data]);
+      setNewMessage("");
     } catch (err) {
       console.error(err);
       toast.error("No se pudo enviar el mensaje");
-      // Eliminar mensaje temporal si falla
-      setMessages((prev) => prev.filter((msg) => msg._id !== tempMessage._id));
     }
   };
 
