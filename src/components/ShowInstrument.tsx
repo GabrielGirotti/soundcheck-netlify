@@ -13,7 +13,7 @@ const ShowInstrument = () => {
   const [description, setDescription] = useState("");
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [category, setCategory] = useState("");
-  const [user, setUser] = useState<{ _id: string; user: string } | null>(
+  const [user, setUser] = useState<{ _id: string; username: string } | null>(
     null
   );
   const [loading, setLoading] = useState(true);
@@ -121,7 +121,7 @@ const ShowInstrument = () => {
           </div>
 
           <p className="mt-2 text-xs md:text-sm pr-20 md:pr-24 italic text-slate-500">
-            Publicado por {user?.user ?? "Usuario desconocido"}
+            Publicado por {user?.username ?? "Usuario desconocido"}
           </p>
           <span className="absolute bottom-0 right-0 bg-gradient-to-r hover:bg-gradient-to-l from-orange-400 to-pink-600 text-white text-xl font-semibold pr-4 pl-8 pb-4 pt-8 rounded-tl-full shadow-lg">
             €{price}
