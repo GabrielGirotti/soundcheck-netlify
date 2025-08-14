@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
+import { useParams } from "react-router-dom";
 
-const MessagesInbox = ({ userId }: { userId: string }) => {
+const MessagesInbox = () => {
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const { userId } = useParams<{ userId: string }>();
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    if (!userId) return;
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -43,7 +45,9 @@ const MessagesInbox = ({ userId }: { userId: string }) => {
           <div
             key={msg._id}
             className={`p-2 rounded ${
-              msg.sender._id === userId ? "bg-slate-700 self-start" : "bg-orange-400 self-end"
+              msg.sender._id === userId
+                ? "bg-slate-700 self-start"
+                : "bg-orange-400 self-end"
             }`}
           >
             <p className="text-sm">{msg.content}</p>

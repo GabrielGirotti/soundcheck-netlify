@@ -289,8 +289,8 @@ const App: React.FC = () => {
         />
         <Route path="/show-instrument/:id" element={<ShowInstrument />} />
         <Route
-          path="/messages"
-          element={token ? <MessagesInbox userId={""}/> : <Navigate to="/login" replace />}
+          path="/messages/:userId"
+          element={token ? <MessagesInbox /> : <Navigate to="/login" replace />}
         />
             <Route
           path="/chat"
