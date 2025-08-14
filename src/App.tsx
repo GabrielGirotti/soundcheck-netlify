@@ -20,6 +20,8 @@ import ShowInstrument from "./components/ShowInstrument";
 
 import { Toaster } from "react-hot-toast";
 
+import { jwtDecode } from "jwt-decode";
+
 import MessagesInbox from "./components/MessagesInbox";
 import Chat from "./components/Chat";
 
@@ -54,6 +56,25 @@ const App: React.FC = () => {
     navigate(`/login`);
   };
 
+  let currentUserId: string | null = null;
+if (token) {
+  try {
+    const decoded = jwtDecode<{ id: string }>(token); // Cambia 'id' según tu payload
+    currentUserId = decoded.id;
+  } catch (err) {
+    console.error("Token inválido:", err);
+  }
+}
+
+const handleMessagesClick = () => {
+  if (currentUserId) {
+    navigate(`/messages/${currentUserId}`);
+    setMenuOpen(false); // cierra el menú en móvil
+  } else {
+    navigate("/login");
+  }
+};
+
   return (
     <>
       {token ? (
@@ -75,6 +96,9 @@ const App: React.FC = () => {
               <Link to="/panel" className="underline-effect">
                 Mi panel
               </Link>
+               <button onClick={handleMessagesClick} className="underline-effect">
+    Mensajes
+  </button>
               <button onClick={handleLogout} className="underline-effect">
                 Salir
               </button>
