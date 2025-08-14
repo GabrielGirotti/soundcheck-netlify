@@ -13,7 +13,9 @@ const ShowInstrument = () => {
   const [description, setDescription] = useState("");
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [category, setCategory] = useState("");
-  const [user, setUser] = useState<{ _id: string; username: string } | null>(null);
+  const [user, setUser] = useState<{ _id: string; username: string } | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -40,7 +42,7 @@ const ShowInstrument = () => {
         setCategory(data.category);
         setLocation(data.location);
         setImagePreviews(data.imageUrls?.map((url: string) => `${url}`) || []);
-        setUser(data.user); 
+        setUser(data.user);
       } catch (error) {
         toast.error("No se pudo cargar el instrumento");
         navigate("/");
@@ -57,6 +59,11 @@ const ShowInstrument = () => {
       return;
     }
 
+    if (!user?._id) {
+      toast.error("No se encontró el usuario receptor");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/messages`, {
@@ -66,7 +73,7 @@ const ShowInstrument = () => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          receiver: user?._id, 
+          receiver: user._id,
           content: message,
         }),
       });
