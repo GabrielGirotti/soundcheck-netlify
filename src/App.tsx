@@ -74,6 +74,7 @@ const App: React.FC = () => {
         username={username}
         handleLogout={handleLogout}
         handleMessagesClick={handleMessagesClick}
+        currentUserId={currentUserId}
       />
 
       <Routes>

@@ -7,12 +7,14 @@ interface NavbarProps {
   username: string | null;
   handleLogout: () => void;
   handleMessagesClick: () => void;
+  currentUserId: string | null;
 }
 
 const Navbar: React.FC<NavbarProps> = ({
   token,
   handleLogout,
   handleMessagesClick,
+  currentUserId,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -42,9 +44,25 @@ const Navbar: React.FC<NavbarProps> = ({
     setMenuOpen(false); // cerrar menú
   };
 
-  const handleMessagesClickNav = () => {
-    handleMessagesClick(); // función de App
+  const handleMessagesClickNav = async () => {
+    handleMessagesClick(); // función de App para navegar
     setMenuOpen(false); // cerrar menú
+
+    if (token && currentUserId) {
+      try {
+        await fetch(`${API_URL}/messages/mark-read`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ userId: currentUserId }),
+        });
+        setUnreadCount(0);
+      } catch (err) {
+        console.error("Error al marcar mensajes como leídos:", err);
+      }
+    }
   };
 
   return (
