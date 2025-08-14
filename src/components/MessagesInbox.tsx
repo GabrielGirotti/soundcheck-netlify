@@ -43,6 +43,37 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
     fetchMessages();
   }, [currentUserId, otherUserId]);
 
+  // const sendMessage = async () => {
+  //   if (!newMessage.trim() || !currentUserId || !otherUserId) return;
+
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) throw new Error("No hay token");
+
+  //     const res = await fetch(`${API_URL}/messages`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify({
+  //         sender: currentUserId,
+  //         receiver: otherUserId,
+  //         content: newMessage,
+  //       }),
+  //     });
+
+  //     if (!res.ok) throw new Error("Error al enviar mensaje");
+
+  //     const data = await res.json();
+  //     setMessages((prev) => [...prev, data]);
+  //     setNewMessage("");
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("No se pudo enviar el mensaje");
+  //   }
+  // };
+
   const sendMessage = async () => {
     if (!newMessage.trim() || !currentUserId || !otherUserId) return;
 
@@ -66,7 +97,16 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
       if (!res.ok) throw new Error("Error al enviar mensaje");
 
       const data = await res.json();
-      setMessages((prev) => [...prev, data]);
+
+      // 👇 Normalizamos el sender para que coincida con el resto
+      setMessages((prev) => [
+        ...prev,
+        {
+          ...data,
+          sender: { _id: currentUserId },
+        },
+      ]);
+
       setNewMessage("");
     } catch (err) {
       console.error(err);
@@ -86,8 +126,8 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
             key={msg._id}
             className={`p-2 rounded w-[80%] ${
               msg.sender._id === currentUserId
-                ? "bg-slate-800 self-start"
-                : "bg-slate-700 self-end"
+                ? "bg-slate-700 self-end"
+                : "bg-slate-800 self-start"
             }`}
           >
             <p className="text-sm">{msg.content}</p>
