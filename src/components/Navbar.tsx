@@ -73,7 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({
                   Mensajes
                 </button>
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-8 h-2 w-2 bg-red-500 rounded-full"></span>
+                  <span className="absolute -top-1 -right-2 h-2 w-2 bg-red-500 rounded-full"></span>
                 )}
               </div>
 
@@ -163,7 +163,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     Mensajes
                   </button>
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-8 h-2 w-2 bg-red-500 rounded-full"></span>
+                    <span className="absolute -top-1 -right-2 h-2 w-2 bg-red-500 rounded-full"></span>
                   )}
                 </div>
 
