@@ -99,7 +99,6 @@
 
 // export default MessagesInboxList;
 
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
@@ -202,13 +201,6 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({
   const handleOpenConversation = async (userId: string) => {
     navigate(`/messages/${userId}`);
 
-    // Actualizar estado local para quitar borde rojo
-    setConversations((prev) =>
-      prev.map((conv) =>
-        conv.userId === userId ? { ...conv, hasUnread: false } : conv
-      )
-    );
-
     // Marcar como leídos en el backend
     try {
       const token = localStorage.getItem("token");
@@ -222,6 +214,13 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({
         },
         body: JSON.stringify({ userId }),
       });
+
+      // Actualizar estado local para quitar borde rojo SOLO de esa conversación
+      setConversations((prev) =>
+        prev.map((conv) =>
+          conv.userId === userId ? { ...conv, hasUnread: false } : conv
+        )
+      );
     } catch (err) {
       console.error("Error al marcar mensajes como leídos:", err);
     }
