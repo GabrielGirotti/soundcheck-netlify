@@ -23,6 +23,7 @@ import { Toaster } from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
 
 import MessagesInbox from "./components/MessagesInbox";
+import MessagesInboxList from "./components/MessagesInboxList";
 
 const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -311,6 +312,16 @@ const App: React.FC = () => {
           }
         />
         <Route path="/show-instrument/:id" element={<ShowInstrument />} />
+        <Route
+          path="/messages"
+          element={
+            token ? (
+              <MessagesInboxList currentUserId={currentUserId} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
         <Route
           path="/messages/:otherUserId"
           element={
