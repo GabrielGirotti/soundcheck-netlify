@@ -36,6 +36,7 @@ const ShowInstrument = () => {
       try {
         const res = await fetch(`${API_URL}/instruments/${id}`);
         const data = await res.json();
+        console.log("Instrument data:", data);
         setTitle(data.title);
         setPrice(data.price);
         setDescription(data.description);
