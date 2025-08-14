@@ -1,95 +1,119 @@
-// import { useState, useEffect, useRef } from "react";
-// import { useParams } from "react-router-dom";
-// import Spinner from "./Spinner";
-// import { toast } from "react-hot-toast";
+import { useState, useEffect, useRef } from "react";
+import { toast } from "react-hot-toast";
+import Spinner from "./Spinner";
 
-// const Chat = () => {
-//   const { userId } = useParams();
-//   const [messages, setMessages] = useState([]);
-//   const [newMessage, setNewMessage] = useState("");
-//   const [loading, setLoading] = useState(true);
-//   const messagesEndRef = useRef<HTMLDivElement>(null);
+const Chat = ({ userId, otherUsername }: { userId: string; otherUsername: string }) => {
+  const [messages, setMessages] = useState<any[]>([]);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-//   const API_URL = import.meta.env.VITE_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL;
 
-//   useEffect(() => {
-//     const fetchMessages = async () => {
-//       try {
-//         const token = localStorage.getItem("token");
-//         const res = await fetch(`${API_URL}/messages/with/${userId}`, {
-//           headers: { Authorization: `Bearer ${token}` }
-//         });
-//         if (!res.ok) throw new Error();
-//         const data = await res.json();
-//         setMessages(data);
-//       } catch {
-//         toast.error("Error al cargar chat");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     fetchMessages();
-//   }, [userId]);
+  // Función para hacer scroll al último mensaje
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-//   const sendMessage = async () => {
-//     if (!newMessage.trim()) return;
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_URL}/messages/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Error al cargar mensajes");
+        const data = await res.json();
+        setMessages(data);
+      } catch (err) {
+        console.error(err);
+        toast.error("No se pudieron cargar los mensajes");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-//     try {
-//       const token = localStorage.getItem("token");
-//       const res = await fetch(`${API_URL}/messages`, {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`
-//         },
-//         body: JSON.stringify({ receiver: userId, content: newMessage })
-//       });
-//       if (!res.ok) throw new Error();
-//       const sentMsg = await res.json();
-//       setMessages((prev) => [...prev, sentMsg]);
-//       setNewMessage("");
-//       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-//     } catch {
-//       toast.error("No se pudo enviar el mensaje");
-//     }
-//   };
+    fetchMessages();
+  }, [userId]);
 
-//   if (loading) return <Spinner />;
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
-//   return (
-//     <div className="p-4 flex flex-col h-screen">
-//       <div className="flex-1 overflow-y-auto mb-4">
-//         {messages.map((msg: any, idx) => (
-//           <div
-//             key={idx}
-//             className={`mb-2 p-2 rounded max-w-xs ${
-//               msg.sender._id === localStorage.getItem("userId")
-//                 ? "bg-orange-500 ml-auto text-white"
-//                 : "bg-slate-700 text-white"
-//             }`}
-//           >
-//             {msg.content}
-//           </div>
-//         ))}
-//         <div ref={messagesEndRef} />
-//       </div>
+  const handleSendMessage = async () => {
+    if (!message.trim()) return toast.error("El mensaje no puede estar vacío");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          receiver: userId,
+          content: message,
+        }),
+      });
 
-//       <div className="flex gap-2">
-//         <input
-//           value={newMessage}
-//           onChange={(e) => setNewMessage(e.target.value)}
-//           placeholder="Escribe un mensaje..."
-//           className="flex-1 p-2 rounded bg-slate-800 text-white border border-gray-600"
-//         />
-//         <button
-//           onClick={sendMessage}
-//           className="px-4 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white"
-//         >
-//           Enviar
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
+      if (!res.ok) throw new Error("Error al enviar mensaje");
 
-// export default Chat;
+      const newMsg = await res.json();
+      setMessages([...messages, newMsg]);
+      setMessage("");
+    } catch (err) {
+      console.error(err);
+      toast.error("No se pudo enviar el mensaje");
+    }
+  };
+
+  if (loading) return <Spinner />;
+
+  return (
+    <div className="flex flex-col max-w-[500px] mx-auto p-4 h-[80vh] border border-gray-600 rounded-lg bg-slate-900">
+      <h2 className="text-xl font-bold mb-4 text-center">{otherUsername}</h2>
+
+      <div className="flex-1 overflow-y-auto mb-4 flex flex-col gap-2">
+        {messages.length === 0 ? (
+          <p className="text-gray-400 text-center mt-4">No hay mensajes aún.</p>
+        ) : (
+          messages.map((msg) => (
+            <div
+              key={msg._id}
+              className={`p-2 rounded max-w-[80%] ${
+                msg.sender._id === userId
+                  ? "bg-slate-700 self-start"
+                  : "bg-orange-400 self-end text-black"
+              }`}
+            >
+              <p className="text-sm">{msg.content}</p>
+              <span className="text-xs text-gray-400">
+                {new Date(msg.createdAt).toLocaleString()}
+              </span>
+            </div>
+          ))
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className="flex gap-2">
+        <input
+          type="text"
+          placeholder="Escribe tu mensaje..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="flex-1 p-2 rounded bg-slate-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+        />
+        <button
+          onClick={handleSendMessage}
+          className="px-4 py-2 rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition"
+        >
+          Enviar
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Chat;

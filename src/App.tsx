@@ -19,7 +19,9 @@ import EditInstrumentForm from "./components/EditInstrumentForm";
 import ShowInstrument from "./components/ShowInstrument";
 
 import { Toaster } from "react-hot-toast";
-import MessagesList from "./components/MessagesList";
+
+import MessagesInbox from "./components/MessagesInbox";
+import Chat from "./components/Chat";
 
 const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
@@ -288,7 +290,11 @@ const App: React.FC = () => {
         <Route path="/show-instrument/:id" element={<ShowInstrument />} />
         <Route
           path="/messages"
-          element={token ? <MessagesList /> : <Navigate to="/login" replace />}
+          element={token ? <MessagesInbox userId={""}/> : <Navigate to="/login" replace />}
+        />
+            <Route
+          path="/chat"
+          element={token ? <Chat userId={""} otherUsername={""}/> : <Navigate to="/login" replace />}
         />
       </Routes>
       <Footer />
