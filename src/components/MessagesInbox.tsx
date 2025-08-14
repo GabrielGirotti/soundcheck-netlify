@@ -23,6 +23,7 @@ const MessagesInbox = () => {
 
         const data = await res.json();
         setMessages(data);
+        console.log(data)
       } catch (err) {
         console.error(err);
         toast.error("No se pudieron cargar los mensajes");
