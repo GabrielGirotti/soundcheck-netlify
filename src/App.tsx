@@ -57,23 +57,19 @@ const App: React.FC = () => {
   };
 
   let currentUserId: string | null = null;
-if (token) {
-  try {
-    const decoded = jwtDecode<{ id: string }>(token); // Cambia 'id' según tu payload
-    currentUserId = decoded.id;
-  } catch (err) {
-    console.error("Token inválido:", err);
+  if (token) {
+    try {
+      const decoded = jwtDecode<{ id: string }>(token); // Cambia 'id' según tu payload
+      currentUserId = decoded.id;
+    } catch (err) {
+      console.error("Token inválido:", err);
+    }
   }
-}
 
-const handleMessagesClick = () => {
-  if (currentUserId) {
-    navigate(`/messages/${currentUserId}`);
-    setMenuOpen(false); // cierra el menú en móvil
-  } else {
-    navigate("/login");
-  }
-};
+  const handleMessagesClick = () => {
+    navigate("/messages");
+    setMenuOpen(false);
+  };
 
   return (
     <>
@@ -96,9 +92,12 @@ const handleMessagesClick = () => {
               <Link to="/panel" className="underline-effect">
                 Mi panel
               </Link>
-               <button onClick={handleMessagesClick} className="underline-effect">
-    Mensajes
-  </button>
+              <button
+                onClick={handleMessagesClick}
+                className="underline-effect"
+              >
+                Mensajes
+              </button>
               <button onClick={handleLogout} className="underline-effect">
                 Salir
               </button>
@@ -313,12 +312,24 @@ const handleMessagesClick = () => {
         />
         <Route path="/show-instrument/:id" element={<ShowInstrument />} />
         <Route
-          path="/messages/:userId"
-          element={token ? <MessagesInbox /> : <Navigate to="/login" replace />}
+          path="/messages"
+          element={
+            token ? (
+              <MessagesInbox currentUserId={currentUserId} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
         />
-            <Route
+        <Route
           path="/chat"
-          element={token ? <Chat userId={""} otherUsername={""}/> : <Navigate to="/login" replace />}
+          element={
+            token ? (
+              <Chat userId={""} otherUsername={""} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
         />
       </Routes>
       <Footer />

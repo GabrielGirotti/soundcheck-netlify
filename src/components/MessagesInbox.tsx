@@ -1,29 +1,30 @@
 import { useState, useEffect } from "react";
 import Spinner from "./Spinner";
 import { toast } from "react-hot-toast";
-import { useParams } from "react-router-dom";
 
-const MessagesInbox = () => {
+interface MessagesInboxProps {
+  currentUserId: string | null;
+}
+
+const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const { userId } = useParams<{ userId: string }>();
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    if (!userId) return;
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${API_URL}/messages/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        if (!token) throw new Error("No hay token");
+
+        const res = await fetch(`${API_URL}/messages`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Error al cargar mensajes");
 
         const data = await res.json();
         setMessages(data);
-        console.log(data)
+        console.log(data);
       } catch (err) {
         console.error(err);
         toast.error("No se pudieron cargar los mensajes");
@@ -33,7 +34,7 @@ const MessagesInbox = () => {
     };
 
     fetchMessages();
-  }, [userId]);
+  }, []);
 
   if (loading) return <Spinner />;
 
@@ -46,7 +47,7 @@ const MessagesInbox = () => {
           <div
             key={msg._id}
             className={`p-2 rounded ${
-              msg.sender._id === userId
+              msg.sender._id === currentUserId
                 ? "bg-slate-700 self-start"
                 : "bg-orange-400 self-end"
             }`}
