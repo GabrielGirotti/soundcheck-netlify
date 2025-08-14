@@ -90,7 +90,6 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          sender: currentUserId,
           receiver: otherUserId,
           content: tempMessage.content,
         }),
