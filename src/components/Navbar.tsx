@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SearchBar from "./Searchbar";
 
@@ -15,6 +15,27 @@ const Navbar: React.FC<NavbarProps> = ({
   handleMessagesClick,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const API_URL = import.meta.env.VITE_API_URL;
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const res = await fetch(`${API_URL}/messages/unread-count`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setUnreadCount(data.unreadCount);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 5000); // refresca cada 5s
+    return () => clearInterval(interval);
+  }, [token]);
 
   const handleLogoutClick = () => {
     handleLogout(); // función que viene de App
@@ -44,12 +65,18 @@ const Navbar: React.FC<NavbarProps> = ({
               <Link to="/new" className="underline-effect">
                 Vender
               </Link>
-              <button
-                onClick={handleMessagesClickNav}
-                className="underline-effect"
-              >
-                Mensajes
-              </button>
+              <div className="relative">
+                <button
+                  onClick={handleMessagesClickNav}
+                  className="underline-effect"
+                >
+                  Mensajes
+                </button>
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full"></span>
+                )}
+              </div>
+
               <Link to="/panel" className="underline-effect">
                 Mi panel
               </Link>
@@ -128,12 +155,18 @@ const Navbar: React.FC<NavbarProps> = ({
                 >
                   Vender
                 </Link>
-                <button
-                  onClick={handleMessagesClickNav}
-                  className="underline-effect"
-                >
-                  Mensajes
-                </button>
+                <div className=" relative">
+                  <button
+                    onClick={handleMessagesClickNav}
+                    className="underline-effect"
+                  >
+                    Mensajes
+                  </button>
+                  {unreadCount > 0 && (
+                    <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full"></span>
+                  )}
+                </div>
+
                 <Link
                   to="/panel"
                   className="underline-effect"
