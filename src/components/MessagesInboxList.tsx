@@ -140,7 +140,7 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({
         const data = await res.json();
 
         // Traer mensajes no leídos
-        const unreadRes = await fetch(`${API_URL}/messages/unread`, {
+        const unreadRes = await fetch(`${API_URL}/messages/unread-count`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const unreadData: any[] = await unreadRes.json();
