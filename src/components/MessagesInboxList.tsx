@@ -99,6 +99,7 @@
 
 // export default MessagesInboxList;
 
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Spinner from "./Spinner";
@@ -106,6 +107,20 @@ import { toast } from "react-hot-toast";
 
 interface MessagesInboxListProps {
   currentUserId: string | null;
+}
+
+interface User {
+  _id: string;
+  username: string;
+}
+
+interface Message {
+  _id: string;
+  sender: User;
+  receiver: User;
+  content: string;
+  createdAt: string;
+  read: boolean;
 }
 
 interface Conversation {
@@ -137,18 +152,22 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Error al cargar mensajes");
-        const data = await res.json();
+        const data: Message[] = await res.json();
 
-        // Traer conteo de mensajes no leídos
-        const unreadRes = await fetch(`${API_URL}/messages/unread-count`, {
+        // Traer mensajes no leídos
+        const unreadRes = await fetch(`${API_URL}/messages/unread`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const unreadData = await unreadRes.json();
-        const hasUnreadGlobal = unreadData.unreadCount > 0;
+        if (!unreadRes.ok)
+          throw new Error("Error al cargar mensajes no leídos");
+        const unreadData: Message[] = await unreadRes.json();
+
+        // Crear un Set de usuarios con mensajes no leídos
+        const unreadSet = new Set(unreadData.map((msg) => msg.sender._id));
 
         // Agrupar mensajes por usuario
         const convMap: Record<string, Conversation> = {};
-        data.forEach((msg: any) => {
+        data.forEach((msg: Message) => {
           const otherUser =
             msg.sender._id === currentUserId ? msg.receiver : msg.sender;
           const lastMessageDate = new Date(msg.createdAt).toISOString();
@@ -163,7 +182,7 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({
               username: otherUser.username,
               lastMessage: msg.content,
               lastMessageDate,
-              hasUnread: hasUnreadGlobal, // ahora usamos la bandera global
+              hasUnread: unreadSet.has(otherUser._id),
             };
           }
         });
