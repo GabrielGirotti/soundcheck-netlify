@@ -139,20 +139,12 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({
         if (!res.ok) throw new Error("Error al cargar mensajes");
         const data = await res.json();
 
-        // Traer mensajes no leídos
+        // Traer conteo de mensajes no leídos
         const unreadRes = await fetch(`${API_URL}/messages/unread-count`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const unreadData: any[] = await unreadRes.json();
-        const unreadSet = new Set(
-          unreadData.map((msg) => {
-            const otherUser =
-              msg.sender._id === currentUserId
-                ? msg.receiver._id
-                : msg.sender._id;
-            return otherUser;
-          })
-        );
+        const unreadData = await unreadRes.json();
+        const hasUnreadGlobal = unreadData.unreadCount > 0;
 
         // Agrupar mensajes por usuario
         const convMap: Record<string, Conversation> = {};
@@ -171,7 +163,7 @@ const MessagesInboxList: React.FC<MessagesInboxListProps> = ({
               username: otherUser.username,
               lastMessage: msg.content,
               lastMessageDate,
-              hasUnread: unreadSet.has(otherUser._id),
+              hasUnread: hasUnreadGlobal, // ahora usamos la bandera global
             };
           }
         });
