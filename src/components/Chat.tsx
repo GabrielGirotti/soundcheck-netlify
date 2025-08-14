@@ -2,7 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import Spinner from "./Spinner";
 
-const Chat = ({ userId, otherUsername }: { userId: string; otherUsername: string }) => {
+interface ChatProps {
+  currentUserId: string;      // Usuario actual
+  otherUserId: string;        // Usuario con quien chateamos
+  otherUsername: string;      // Nombre para mostrar
+}
+
+const Chat: React.FC<ChatProps> = ({ currentUserId, otherUserId, otherUsername }) => {
   const [messages, setMessages] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -10,7 +16,7 @@ const Chat = ({ userId, otherUsername }: { userId: string; otherUsername: string
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  // Función para hacer scroll al último mensaje
+  // Scroll al último mensaje
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -19,10 +25,13 @@ const Chat = ({ userId, otherUsername }: { userId: string; otherUsername: string
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${API_URL}/messages/${userId}`, {
+        if (!token) throw new Error("No hay token");
+
+        const res = await fetch(`${API_URL}/messages/${otherUserId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Error al cargar mensajes");
+
         const data = await res.json();
         setMessages(data);
       } catch (err) {
@@ -34,7 +43,7 @@ const Chat = ({ userId, otherUsername }: { userId: string; otherUsername: string
     };
 
     fetchMessages();
-  }, [userId]);
+  }, [otherUserId]);
 
   useEffect(() => {
     scrollToBottom();
@@ -42,8 +51,11 @@ const Chat = ({ userId, otherUsername }: { userId: string; otherUsername: string
 
   const handleSendMessage = async () => {
     if (!message.trim()) return toast.error("El mensaje no puede estar vacío");
+
     try {
       const token = localStorage.getItem("token");
+      if (!token) throw new Error("No hay token");
+
       const res = await fetch(`${API_URL}/messages`, {
         method: "POST",
         headers: {
@@ -51,7 +63,7 @@ const Chat = ({ userId, otherUsername }: { userId: string; otherUsername: string
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          receiver: userId,
+          receiver: otherUserId,
           content: message,
         }),
       });
@@ -81,9 +93,9 @@ const Chat = ({ userId, otherUsername }: { userId: string; otherUsername: string
             <div
               key={msg._id}
               className={`p-2 rounded max-w-[80%] ${
-                msg.sender._id === userId
-                  ? "bg-slate-700 self-start"
-                  : "bg-orange-400 self-end text-black"
+                msg.sender._id === currentUserId
+                  ? "bg-slate-700 self-end"
+                  : "bg-orange-400 self-start text-black"
               }`}
             >
               <p className="text-sm">{msg.content}</p>
