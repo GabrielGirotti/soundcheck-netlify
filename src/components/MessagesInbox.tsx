@@ -84,10 +84,10 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
         messages.map((msg) => (
           <div
             key={msg._id}
-            className={`p-2 rounded ${
+            className={`p-2 rounded w-full ${
               msg.sender._id === currentUserId
                 ? "bg-slate-700 self-end"
-                : "bg-orange-400 self-start"
+                : "bg-slate-800 self-start"
             }`}
           >
             <p className="text-sm">{msg.content}</p>
@@ -107,7 +107,7 @@ const MessagesInbox: React.FC<MessagesInboxProps> = ({ currentUserId }) => {
           placeholder="Escribe un mensaje..."
         />
         <button
-          className="bg-orange-400 text-white px-4 rounded"
+          className="rounded bg-gradient-to-r from-orange-400 to-pink-600 text-white font-semibold shadow hover:scale-105 transition"
           onClick={sendMessage}
         >
           Enviar
